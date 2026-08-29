@@ -113,6 +113,9 @@ a.btn{text-decoration:none}
   color:var(--ink-2);font-size:13.5px;font-weight:500;cursor:pointer;
   border-left:2px solid transparent;transition:background .12s,color .12s
 }
+.nav a svg{width:16px;height:16px;flex:none;opacity:.7}
+.nav a.on svg{opacity:1}
+.nav a b{font-weight:inherit}
 .nav a:hover{background:var(--surface-2);color:var(--ink)}
 .nav a.on{background:var(--accent-soft);color:var(--accent-ink);font-weight:600;border-left-color:var(--accent)}
 .nav .count{
@@ -328,44 +331,81 @@ tbody tr.clickable:hover{background:var(--surface-2)}
 .guardando .spin{width:12px;height:12px;border-width:2px}
 
 /* ============================ responsivo ============================ */
-@media (max-width:900px){
-  .shell{grid-template-columns:1fr}
-  .side{
-    position:static;height:auto;border-right:none;border-bottom:1px solid var(--border);
-    flex-direction:row;align-items:center;gap:14px;overflow-x:auto;padding:12px 14px
-  }
-  .nav{flex-direction:row}
-  .nav a{border-left:none;border-bottom:2px solid transparent}
-  .nav a.on{border-left-color:transparent;border-bottom-color:var(--accent)}
-  .nav-label,.side-foot .userchip{display:none}
-  .side-foot{margin-top:0;margin-left:auto}
-  .main{padding:18px 14px 50px}
-  .modal-body{grid-template-columns:1fr}
-  .toolbar input[type=text]{width:100%}
+@media (max-width:900px) and (min-width:761px){
+  .shell{grid-template-columns:186px 1fr}
+  .main{padding:20px 16px 50px}
 }
 
 /* ============================ móvil ============================
-   Por debajo de 760px las tablas dejan de ser tablas: cada fila pasa a
-   ser una tarjeta con las etiquetas de cada dato al costado. */
+   El menú lateral se descompone: la marca queda arriba, fija, y la
+   navegación pasa a una barra inferior al alcance del pulgar. Las tablas
+   dejan de ser tablas y cada fila se convierte en una tarjeta. */
 @media (max-width:760px){
   body{font-size:14.5px}
-  .side{padding:10px 12px;gap:10px}
-  .brand{padding:0}
+  .shell{display:block}
+  .side{display:contents}
+
+  /* encabezado fijo */
+  .brand{
+    position:fixed;top:0;left:0;right:0;height:54px;z-index:30;
+    background:var(--surface);border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:9px;padding:0 14px
+  }
   .brand-sub{display:none}
-  .nav{gap:4px}
-  .nav a{padding:7px 11px;font-size:13px;background:var(--surface-2)}
-  .nav a.on{background:var(--accent-soft)}
-  .main{padding:16px 12px 60px}
+  .mark img{height:28px}
+  .brand-name{font-size:15px}
+
+  /* botón de salida, dentro del encabezado */
+  .side-foot{
+    position:fixed;top:0;right:10px;height:54px;z-index:31;
+    display:flex;align-items:center;margin:0
+  }
+  .userchip{display:none}
+  .side-foot .btn{padding:6px 12px;font-size:0}
+  .side-foot .btn::after{content:"Salir";font-size:12.5px;font-weight:500}
+
+  /* barra de navegación inferior */
+  .nav{
+    position:fixed;bottom:0;left:0;right:0;z-index:30;
+    background:var(--surface);border-top:1px solid var(--border);
+    flex-direction:row;gap:0;padding:5px 4px calc(5px + env(safe-area-inset-bottom));
+    box-shadow:0 -1px 3px rgba(22,33,27,.05)
+  }
+  .nav-label{display:none}
+  .nav a{
+    flex:1;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    padding:6px 2px;border-left:none;border-radius:8px;font-size:10.5px;color:var(--muted);
+    text-align:center;min-width:0
+  }
+  .nav a svg{width:21px;height:21px;opacity:.65}
+  .nav a b{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .nav a .largo{display:none}
+  .nav a.on{background:transparent;color:var(--accent);font-weight:600;border-bottom:none}
+  .nav a.on svg{opacity:1}
+  .nav a:hover{background:transparent}
+  .nav .count{
+    position:absolute;top:1px;left:50%;margin-left:6px;background:var(--muted-2);color:#fff;
+    border-radius:999px;font-size:9.5px;font-weight:600;padding:0 4px;min-width:15px;line-height:15px
+  }
+  .nav #cVenc,.nav #cEpp{background:var(--crit)}
+  .nav a{position:relative}
+  .nav .count:empty{display:none}
+
+  /* el contenido deja lugar para las dos barras */
+  .main{padding:68px 12px 84px;max-width:none}
   .page-head{padding-bottom:12px;margin-bottom:16px}
   .page-head h1{font-size:19px}
   .page-head > div:last-child,.page-head .btn{width:100%}
   .page-head .btn{justify-content:center}
   .stats{grid-template-columns:1fr 1fr;gap:8px}
-  .stat{padding:11px 12px}
-  .stat .v{font-size:22px}
+  .stat{padding:10px 11px}
+  .stat .v{font-size:21px;margin-top:3px}
   .stat .k{font-size:9px}
-  .toolbar{gap:7px}
-  .toolbar input[type=text],.toolbar select{width:100%}
+  .stat .s{display:none}
+  /* filtros en dos columnas, con la búsqueda a lo ancho */
+  .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .toolbar input[type=text]{grid-column:1/-1;width:100%}
+  .toolbar select{width:100%;min-width:0}
 
   .tablewrap{overflow-x:visible}
   table,thead,tbody,tr,th,td{display:block}
@@ -400,7 +440,7 @@ tbody tr.clickable:hover{background:var(--surface-2)}
   .dl{grid-template-columns:1fr;gap:2px 0}
   .dl dt{margin-top:9px}
   .dl dt:first-child{margin-top:0}
-  .tabs{gap:0}
+  .tabs{gap:0;position:sticky;top:54px;background:var(--shell);z-index:5}
   .tab{padding:9px 11px;font-size:12.5px}
   .att{flex-wrap:wrap}
   .att .btn{flex:1}
@@ -410,10 +450,13 @@ tbody tr.clickable:hover{background:var(--surface-2)}
   .modal-foot .btn{flex:1;justify-content:center}
   .viewer iframe{height:56vh}
   .legend{font-size:11px;gap:10px}
-  .guardando{top:auto;bottom:66px;right:10px}
+  .toast{bottom:82px}
+  .guardando{top:62px;right:10px}
+  .overlay{padding:16px 12px}
 }
 
 @media (max-width:420px){
-  .main{padding:14px 10px 60px}
+  .main{padding:66px 10px 84px}
   .stat .v{font-size:20px}
+  .nav a{font-size:10px}
 }

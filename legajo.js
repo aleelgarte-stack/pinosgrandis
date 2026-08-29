@@ -476,7 +476,8 @@ function vFicha(){
 }
 
 function render(){
-  document.querySelectorAll(".nav a").forEach(function(a){ a.classList.toggle("on",a.dataset.view===vista); });
+  var seccion=(vista==="ficha")?"personal":vista;
+  document.querySelectorAll(".nav a").forEach(function(a){ a.classList.toggle("on",a.dataset.view===seccion); });
   var t=totales();
   document.getElementById("cPersonal").textContent=DB.personas.length;
   document.getElementById("cVenc").textContent=(t.vencidos+t.proximos)||"";
