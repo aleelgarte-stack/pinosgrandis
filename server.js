@@ -6,6 +6,7 @@
 
 import express from "express";
 import multer from "multer";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -38,8 +39,6 @@ const esSeguro = (req) => (req.headers["x-forwarded-proto"] || req.protocol) ===
  * nunca se sirve.
  */
 const ESTATICOS = {
-  "/": ["index.html", "text/html; charset=utf-8"],
-  "/index.html": ["index.html", "text/html; charset=utf-8"],
   "/clave.html": ["clave.html", "text/html; charset=utf-8"],
   "/legajo.js": ["legajo.js", "text/javascript; charset=utf-8"],
   "/estilos.css": ["estilos.css", "text/css; charset=utf-8"],
@@ -90,15 +89,49 @@ app.get(/^\/google[0-9a-z]+\.html$/, (req, res) => {
   res.status(404).send("No encontrado");
 });
 
+/* ------------------------- versión de los archivos -------------------------
+ * A los estilos y al código se les cuelga una firma que cambia con su
+ * contenido: /estilos.css?v=8f3c1d... El navegador la trata como una dirección
+ * nueva, así que baja la versión nueva sola, sin recargas forzadas ni caché
+ * que limpiar. La página que las enlaza nunca se guarda.
+ */
+function firma() {
+  const h = crypto.createHash("sha1");
+  for (const f of ["estilos.css", "legajo.js"]) {
+    try { h.update(fs.readFileSync(path.join(aqui, f))); } catch (e) {}
+  }
+  return h.digest("hex").slice(0, 10);
+}
+const FIRMA = firma();
+
+let cacheApp = null;
+function paginaApp() {
+  if (cacheApp) return cacheApp;
+  cacheApp = fs.readFileSync(path.join(aqui, "index.html"), "utf8")
+    .replace('href="/estilos.css"', 'href="/estilos.css?v=' + FIRMA + '"')
+    .replace('src="/legajo.js"', 'src="/legajo.js?v=' + FIRMA + '"');
+  return cacheApp;
+}
+
+app.get(["/", "/index.html"], (req, res) => {
+  res.setHeader("content-type", "text/html; charset=utf-8");
+  res.setHeader("cache-control", "no-store");
+  res.send(paginaApp());
+});
+
 app.use((req, res, next) => {
   if (req.method !== "GET") return next();
   const e = ESTATICOS[req.path];
   if (!e) return next();
   res.setHeader("content-type", e[1]);
-  /* Las imágenes se pueden cachear; el código y las páginas no, para que un
-     cambio publicado se vea enseguida sin tener que forzar la recarga. */
   const imagen = /\.(png|jpg|jpeg|svg|ico|woff2?)$/.test(e[0]);
-  res.setHeader("cache-control", imagen ? "public, max-age=86400" : "no-cache");
+  if (req.query.v) {
+    /* Viene con firma: si la firma cambia, cambia la dirección. Se puede
+       guardar para siempre sin riesgo de quedarse con una versión vieja. */
+    res.setHeader("cache-control", "public, max-age=31536000, immutable");
+  } else {
+    res.setHeader("cache-control", imagen ? "public, max-age=86400" : "no-store");
+  }
   res.sendFile(path.join(aqui, e[0]));
 });
 
@@ -370,7 +403,11 @@ app.post("/api/importar", async (req, res, next) => {
 
 /* ---------------------------- cierre ---------------------------- */
 app.use("/api", (req, res) => res.status(404).json({ error: "Ruta no encontrada: " + req.path }));
-app.get("*", (req, res) => res.sendFile(path.join(aqui, "index.html")));
+app.get("*", (req, res) => {
+  res.setHeader("content-type", "text/html; charset=utf-8");
+  res.setHeader("cache-control", "no-store");
+  res.send(paginaApp());
+});
 
 app.use((e, req, res, next) => {
   console.error(e);
