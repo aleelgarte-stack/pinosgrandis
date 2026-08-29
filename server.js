@@ -6,6 +6,7 @@
 
 import express from "express";
 import multer from "multer";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Readable } from "node:stream";
@@ -47,6 +48,48 @@ const ESTATICOS = {
   "/datos-iniciales.json": ["datos-iniciales.json", "application/json; charset=utf-8"],
 };
 
+/* Páginas públicas: no exigen sesión y describen la aplicación. Google las
+ * pide para poder publicar la app (página principal y política de privacidad).
+ * Se les inyecta, si está configurada, la etiqueta de verificación de Search
+ * Console y el correo de contacto. */
+const PUBLICAS = { "/inicio": "inicio.html", "/privacidad": "privacidad.html" };
+const cachePublicas = {};
+
+function paginaPublica(archivo) {
+  if (cachePublicas[archivo]) return cachePublicas[archivo];
+  let html = fs.readFileSync(path.join(aqui, archivo), "utf8");
+  const v = env.GOOGLE_SITE_VERIFICATION;
+  html = html.replace(
+    "<!--VERIFICACION-->",
+    v ? '<meta name="google-site-verification" content="' + escaparHtml(v) + '">' : ""
+  );
+  const correo = env.CORREO_CONTACTO;
+  html = html.replace(
+    "<!--CORREO-->",
+    correo ? ", a <a href=\"mailto:" + escaparHtml(correo) + '">' + escaparHtml(correo) + "</a>" : ""
+  );
+  cachePublicas[archivo] = html;
+  return html;
+}
+
+app.get(["/inicio", "/privacidad"], (req, res) => {
+  res.setHeader("content-type", "text/html; charset=utf-8");
+  res.setHeader("cache-control", "no-cache");
+  res.send(paginaPublica(PUBLICAS[req.path]));
+});
+
+/* Verificación de propiedad del sitio por archivo, si se usa ese método:
+ * la variable GOOGLE_VERIFICACION_ARCHIVO lleva el nombre que da Google,
+ * por ejemplo google1a2b3c4d5e6f.html */
+app.get(/^\/google[0-9a-z]+\.html$/, (req, res) => {
+  const nombre = env.GOOGLE_VERIFICACION_ARCHIVO;
+  if (nombre && req.path === "/" + nombre) {
+    res.setHeader("content-type", "text/html; charset=utf-8");
+    return res.send("google-site-verification: " + nombre);
+  }
+  res.status(404).send("No encontrado");
+});
+
 app.use((req, res, next) => {
   if (req.method !== "GET") return next();
   const e = ESTATICOS[req.path];
@@ -60,15 +103,51 @@ app.use((req, res, next) => {
 app.get("/api/salud", (req, res) => {
   const faltan = ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_REFRESH_TOKEN", "SESSION_SECRET", "USUARIOS"]
     .filter((k) => !env[k]);
-  res.json({ ok: faltan.length === 0, faltan });
+  let usuarios;
+  try {
+    usuarios = Auth.usuariosDe(env).map((u) => u.usuario);
+  } catch (e) {
+    usuarios = "La variable USUARIOS está mal escrita: tiene que ser el texto completo que da /clave.html, en un solo renglón.";
+  }
+  res.json({ ok: faltan.length === 0, faltan, usuarios });
 });
 
 /* ---------------------------- sesión ---------------------------- */
 app.post("/api/login", async (req, res, next) => {
   try {
     const { usuario, clave } = req.body || {};
-    const s = await Auth.entrar(env, usuario, clave);
-    if (!s) return res.status(401).json({ error: "Usuario o contraseña incorrectos." });
+
+    let lista;
+    try {
+      lista = Auth.usuariosDe(env);
+    } catch (e) {
+      return res.status(500).json({
+        error: "La variable USUARIOS está mal escrita. Generala de nuevo en /clave.html y pegala completa, en un solo renglón.",
+      });
+    }
+    if (!lista.length) {
+      return res.status(500).json({
+        error: "Todavía no hay usuarios cargados. Falta la variable USUARIOS en Render (se genera en /clave.html).",
+      });
+    }
+    if (!env.SESSION_SECRET) {
+      return res.status(500).json({
+        error: "Falta la variable SESSION_SECRET en Render (se genera en /clave.html).",
+      });
+    }
+
+    const u = Auth.buscarUsuario(lista, usuario);
+    if (!u) {
+      return res.status(401).json({
+        error: 'No existe el usuario "' + String(usuario || "").trim() + '". Los cargados son: ' +
+               lista.map((x) => x.usuario).join(", ") + ".",
+      });
+    }
+    if (!(await Auth.verificar(u, clave))) {
+      return res.status(401).json({ error: 'La contraseña no coincide para "' + u.usuario + '".' });
+    }
+
+    const s = { usuario: u.usuario, nombre: u.nombre || u.usuario };
     res.setHeader("set-cookie", await Auth.cookieSesion(env, s, esSeguro(req)));
     res.json({ sesion: s });
   } catch (e) { next(e); }

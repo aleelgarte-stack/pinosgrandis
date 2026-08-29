@@ -38,7 +38,11 @@ async function api(ruta,opciones){
     var r=await fetch("/api/"+ruta,Object.assign({credentials:"same-origin"},opciones||{}));
     var t=await r.text();
     var j=t?JSON.parse(t):{};
-    if(r.status===401){ salir(true); throw new Error("La sesión venció. Volvé a entrar."); }
+    if(r.status===401&&ruta!=="login"){
+      /* El servidor no reconoce la sesión: se volvió a la pantalla de ingreso. */
+      salir(true);
+      throw new Error("La sesión venció. Volvé a entrar.");
+    }
     if(!r.ok){ var e=new Error(j.error||("Error "+r.status)); e.codigo=j.codigo; e.faltan=j.faltan; throw e; }
     return j;
   } finally { ocupado(false); }

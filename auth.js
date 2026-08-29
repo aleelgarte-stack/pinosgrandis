@@ -33,12 +33,39 @@ function iguales(a, b) {
   return d === 0;
 }
 
+/* Lee la variable USUARIOS. Lanza error si está mal escrita, para poder
+ * avisarlo con claridad en vez de decir "contraseña incorrecta". */
+export function usuariosDe(env) {
+  const crudo = String(env.USUARIOS || "").trim();
+  if (!crudo) return [];
+  let l;
+  try {
+    l = JSON.parse(crudo);
+  } catch (e) {
+    throw new Error("FORMATO");
+  }
+  if (!Array.isArray(l)) throw new Error("FORMATO");
+  for (const u of l) {
+    if (!u || !u.usuario || !u.sal || !u.hash) throw new Error("FORMATO");
+  }
+  return l;
+}
+
+export function buscarUsuario(lista, usuario) {
+  const q = String(usuario || "").trim().toLowerCase();
+  return lista.find((x) => String(x.usuario || "").toLowerCase() === q) || null;
+}
+
+export async function verificar(u, clave) {
+  const hash = await derivar(clave, u.sal);
+  return iguales(hash, u.hash);
+}
+
 function usuarios(env) {
   try {
-    const l = JSON.parse(env.USUARIOS || "[]");
-    return Array.isArray(l) ? l : [];
+    return usuariosDe(env);
   } catch (e) {
-    console.error("USUARIOS no es un JSON válido. Revisá la variable de entorno.");
+    console.error("USUARIOS no tiene un formato válido. Revisá la variable de entorno.");
     return [];
   }
 }
