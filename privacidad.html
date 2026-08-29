@@ -12,34 +12,32 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
 <style>
 :root{
-  --bg:#F5F8F4;--surface:#FFFFFF;--surface-2:#EDF2EC;--border:#DCE5DA;
-  --ink:#14201A;--ink-2:#3B4A40;--muted:#6C7A6F;--accent:#006838;--accent-ink:#004F2A;--lima:#8BC53F;
-  --shadow:0 1px 2px rgba(20,32,26,.05),0 12px 30px -18px rgba(20,32,26,.3);
+  color-scheme: light;
+  --bg:#FFFFFF;--shell:#F7F9F8;--surface:#FFFFFF;--surface-2:#F4F7F5;--border:#E3E8E5;
+  --ink:#16211B;--ink-2:#3E4B44;--muted:#71807A;--muted-2:#93A09A;
+  --accent:#006838;--accent-ink:#00512C;--accent-soft:#EBF4EF;--lima:#8BC53F;
+  --sombra:0 1px 2px rgba(22,33,27,.05);
 }
-@media (prefers-color-scheme:dark){:root{
-  --bg:#0E120F;--surface:#171C18;--surface-2:#1F261F;--border:#2B332C;
-  --ink:#E8EEE8;--ink-2:#C2CCC2;--muted:#8D9A8E;--accent:#4CB07A;--accent-ink:#8BD9AC;--lima:#A8D95F;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 30px -18px rgba(0,0,0,.8);
-}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);
+html,body{background:var(--bg)}
+body{margin:0;color:var(--ink);
   font:16px/1.65 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
 .hoja{max-width:680px;margin:0 auto;padding:48px 22px 70px}
 img.logo{height:64px;display:block;margin:0 auto 22px}
 h1{font-family:"Source Serif 4",Georgia,serif;font-size:30px;font-weight:700;text-align:center;margin:0 0 6px;letter-spacing:-.015em}
 .fecha{text-align:center;color:var(--muted);font-size:14px;margin:0 0 26px}
-.regla{height:3px;background:linear-gradient(90deg,var(--accent),var(--lima));border-radius:2px;margin:0 0 32px}
+.regla{height:2px;background:linear-gradient(90deg,var(--accent),var(--lima));border-radius:2px;margin:0 0 32px}
 h2{font-family:"Source Serif 4",Georgia,serif;font-size:20px;font-weight:600;margin:30px 0 8px}
 p{margin:11px 0;color:var(--ink-2)}
 ul{margin:11px 0;padding-left:22px;color:var(--ink-2)}
 li{margin:6px 0}
 code{font-family:ui-monospace,Consolas,monospace;font-size:.9em;background:var(--surface-2);
   border:1px solid var(--border);border-radius:4px;padding:1px 5px}
-.caja{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:20px 22px;box-shadow:var(--shadow);margin:24px 0}
+.caja{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:20px 22px;box-shadow:var(--sombra);margin:24px 0}
 .caja p:first-child{margin-top:0}
 .caja p:last-child{margin-bottom:0}
 a{color:var(--accent-ink)}
-@media (prefers-color-scheme:dark){a{color:var(--accent)}}
+
 footer{margin-top:42px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:14px;text-align:center}
 </style>
 </head>

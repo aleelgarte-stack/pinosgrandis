@@ -255,12 +255,13 @@ function vPersonal(){
     return '<tr class="clickable" data-open="'+p.id+'">'+
       '<td><div class="person"><span class="stripe" style="background:'+COLOR[peorDe(p)]+'"></span>'+
         '<div><b>'+esc(titulo(p.nombre))+'</b><small>'+esc(p.documento||"sin documento")+'</small></div></div></td>'+
-      '<td>'+esc(p.servicio||"—")+'<br><span style="color:var(--muted);font-size:11.5px">'+esc(p.empresa)+'</span></td>'+
-      '<td>'+esc(p.funcion||"—")+'<br><span style="color:var(--muted);font-size:11.5px">'+esc(p.categoria||"")+'</span></td>'+
-      '<td>'+chipMini(byK.salud)+'</td><td>'+chipMini(byK.moto)+'</td>'+
-      '<td>'+chipMini(byK.libH)+'</td><td>'+chipMini(byK.libA)+'</td><td>'+chipMini(byK.pa)+'</td>'+
-      '<td>'+chipMini(estadoBps(p))+'</td>'+
-      '<td>'+(eppPendientes(p)?'<span class="chip near"><span class="dot"></span>'+eppPendientes(p)+'</span>':'<span class="chip ok"><span class="dot"></span>Al día</span>')+'</td></tr>';
+      '<td data-et="Servicio"><span>'+esc(p.servicio||"—")+'<br><span style="color:var(--muted);font-size:11.5px">'+esc(p.empresa)+'</span></span></td>'+
+      '<td data-et="Función"><span>'+esc(p.funcion||"—")+'<br><span style="color:var(--muted);font-size:11.5px">'+esc(p.categoria||"")+'</span></span></td>'+
+      '<td data-et="C. salud">'+chipMini(byK.salud)+'</td><td data-et="Motosierrista">'+chipMini(byK.moto)+'</td>'+
+      '<td data-et="Libreta H">'+chipMini(byK.libH)+'</td><td data-et="Libreta A">'+chipMini(byK.libA)+'</td>'+
+      '<td data-et="1ros aux.">'+chipMini(byK.pa)+'</td>'+
+      '<td data-et="Alta BPS">'+chipMini(estadoBps(p))+'</td>'+
+      '<td data-et="EPP">'+(eppPendientes(p)?'<span class="chip near"><span class="dot"></span>'+eppPendientes(p)+'</span>':'<span class="chip ok"><span class="dot"></span>Al día</span>')+'</td></tr>';
   }).join("");
   return head("Personal","Legajo del personal. Cada ficha tiene su carpeta de documentos en Drive.",
       '<button class="btn btn-primary" id="nuevo">+ Nueva ficha</button>')+
@@ -290,8 +291,9 @@ function vVencimientos(){
     return '<tr class="clickable" data-open="'+i.p.id+'">'+
       '<td><div class="person"><span class="stripe" style="background:'+COLOR[i.e.k]+'"></span>'+
         '<div><b>'+esc(titulo(i.p.nombre))+'</b><small>'+esc(i.p.documento)+'</small></div></div></td>'+
-      '<td>'+esc(i.n)+'</td><td class="num">'+fmt(i.f)+'</td><td>'+chip(i.e)+'</td>'+
-      '<td>'+esc(i.p.servicio||"—")+'</td><td>'+esc(i.p.funcion||"—")+'</td></tr>';
+      '<td data-et="Documento">'+esc(i.n)+'</td><td class="num" data-et="Vence">'+fmt(i.f)+'</td>'+
+      '<td data-et="Estado">'+chip(i.e)+'</td>'+
+      '<td data-et="Servicio">'+esc(i.p.servicio||"—")+'</td><td data-et="Función">'+esc(i.p.funcion||"—")+'</td></tr>';
   }).join("");
   return head("Vencimientos","Todo lo vencido o por vencer en los próximos 60 días, ordenado por urgencia.")+
     statsHTML()+
@@ -318,10 +320,10 @@ function vEpp(){
     return '<tr class="clickable" data-open="'+r.p.id+'">'+
       '<td><div class="person"><span class="stripe" style="background:'+COLOR[r.e.k]+'"></span>'+
         '<div><b>'+esc(titulo(r.p.nombre))+'</b><small>'+esc(r.p.documento)+'</small></div></div></td>'+
-      '<td>'+esc(r.x.equipo)+(r.x.detalle?'<br><span style="color:var(--muted);font-size:11.5px">'+esc(r.x.detalle)+'</span>':'')+'</td>'+
-      '<td class="num">'+fmt(r.x.fechaEntrega)+'</td>'+
-      '<td>'+(r.x.entregado?'<span class="chip ok"><span class="dot"></span>Sí</span>':'<span class="chip none"><span class="dot"></span>No</span>')+'</td>'+
-      '<td class="num">'+fmt(r.x.fechaReposicion)+'</td><td>'+chip(r.e)+'</td></tr>';
+      '<td data-et="Equipo"><span>'+esc(r.x.equipo)+(r.x.detalle?'<br><span style="color:var(--muted);font-size:11.5px">'+esc(r.x.detalle)+'</span>':'')+'</span></td>'+
+      '<td class="num" data-et="Entrega">'+fmt(r.x.fechaEntrega)+'</td>'+
+      '<td data-et="Entregado">'+(r.x.entregado?'<span class="chip ok"><span class="dot"></span>Sí</span>':'<span class="chip none"><span class="dot"></span>No</span>')+'</td>'+
+      '<td class="num" data-et="Reposición">'+fmt(r.x.fechaReposicion)+'</td><td data-et="Estado">'+chip(r.e)+'</td></tr>';
   }).join("");
   return head("Entregas de EPP","Equipo de protección personal entregado a cada trabajador, con su fecha de reposición.")+
     '<div class="card"><div class="tablewrap"><table><thead><tr><th>Persona</th><th>Equipo</th><th>Fecha de entrega</th><th>Entregado</th><th>Reposición</th><th>Estado</th></tr></thead><tbody>'+
@@ -333,8 +335,8 @@ function vDrive(){
   var rows=filtrados().map(function(p){
     return '<tr class="clickable" data-open="'+p.id+'">'+
       '<td><b>'+esc(titulo(p.nombre))+'</b></td>'+
-      '<td class="path">'+esc(p.documento.replace(/[.\-]/g,"")+" — "+p.nombre)+'</td>'+
-      '<td class="num">'+totalArchivos(p)+'</td>'+
+      '<td class="path" data-et="Carpeta">'+esc(p.documento.replace(/[.\-]/g,"")+" — "+p.nombre)+'</td>'+
+      '<td class="num" data-et="Archivos">'+totalArchivos(p)+'</td>'+
       '<td>'+(p.carpetaUrl?'<a class="btn btn-sm" href="'+esc(p.carpetaUrl)+'" target="_blank" rel="noopener">Abrir en Drive</a>'
               :'<span class="chip none"><span class="dot"></span>Se crea al guardar</span>')+'</td></tr>';
   }).join("");
@@ -433,12 +435,12 @@ function vFicha(){
   if(tab==="epp"){
     var filas=(p.epp||[]).map(function(x){
       var e=estadoEpp(x);
-      return '<tr><td><span class="stripe" style="background:'+COLOR[e.k]+'"></span>'+esc(x.equipo)+
+      return '<tr><td data-et="Equipo"><span class="stripe" style="background:'+COLOR[e.k]+'"></span>'+esc(x.equipo)+
         (x.detalle?'<br><span style="color:var(--muted);font-size:11.5px">'+esc(x.detalle)+'</span>':'')+'</td>'+
         '<td><label class="check" style="padding:0"><input type="checkbox" data-epp="'+x.id+'" data-f="entregado"'+(x.entregado?" checked":"")+'> Entregado</label></td>'+
-        '<td class="num">'+fmt(x.fechaEntrega)+'</td><td class="num">'+fmt(x.fechaReposicion)+'</td>'+
+        '<td class="num" data-et="Entrega">'+fmt(x.fechaEntrega)+'</td><td class="num" data-et="Reposición">'+fmt(x.fechaReposicion)+'</td>'+
         '<td><label class="check" style="padding:0"><input type="checkbox" data-epp="'+x.id+'" data-f="repuesto"'+(x.repuesto?" checked":"")+'> Repuesto</label></td>'+
-        '<td>'+chip(e)+'</td><td><button class="btn btn-sm" data-delepp="'+x.id+'">Quitar</button></td></tr>';
+        '<td data-et="Estado">'+chip(e)+'</td><td><button class="btn btn-sm" data-delepp="'+x.id+'">Quitar</button></td></tr>';
     }).join("");
     h+=card("Entregas registradas",
       '<div class="tablewrap"><table><thead><tr><th>Equipo</th><th>Entrega</th><th>Fecha de entrega</th><th>Reposición prevista</th><th>Reposición</th><th>Estado</th><th></th></tr></thead><tbody>'+

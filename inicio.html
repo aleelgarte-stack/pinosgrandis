@@ -9,89 +9,222 @@
 <!--VERIFICACION-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
 <style>
 :root{
-  --bg:#F5F8F4;--surface:#FFFFFF;--surface-2:#EDF2EC;--border:#DCE5DA;
-  --ink:#14201A;--ink-2:#3B4A40;--muted:#6C7A6F;--accent:#006838;--accent-ink:#004F2A;--lima:#8BC53F;
-  --shadow:0 1px 2px rgba(20,32,26,.05),0 12px 30px -18px rgba(20,32,26,.3);
+  color-scheme: light;
+  --bg:#FFFFFF;--shell:#F7F9F8;--surface:#FFFFFF;--surface-2:#F4F7F5;
+  --border:#E3E8E5;--border-strong:#CCD4CF;
+  --ink:#16211B;--ink-2:#3E4B44;--muted:#71807A;--muted-2:#93A09A;
+  --accent:#006838;--accent-ink:#00512C;--accent-soft:#EBF4EF;--lima:#8BC53F;
+  --ui:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --sombra:0 1px 2px rgba(22,33,27,.05);
+  --sombra-alta:0 14px 38px -18px rgba(22,33,27,.3);
 }
-@media (prefers-color-scheme:dark){:root{
-  --bg:#0E120F;--surface:#171C18;--surface-2:#1F261F;--border:#2B332C;
-  --ink:#E8EEE8;--ink-2:#C2CCC2;--muted:#8D9A8E;--accent:#4CB07A;--accent-ink:#8BD9AC;--lima:#A8D95F;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 30px -18px rgba(0,0,0,.8);
-}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);
-  font:16.5px/1.65 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
-.hoja{max-width:680px;margin:0 auto;padding:56px 22px 70px}
-img.logo{height:92px;display:block;margin:0 auto 26px}
-h1{font-family:"Source Serif 4",Georgia,serif;font-size:34px;font-weight:700;text-align:center;margin:0 0 10px;letter-spacing:-.015em}
-.bajada{text-align:center;color:var(--muted);font-size:17px;margin:0 auto 30px;max-width:52ch}
-.regla{height:3px;background:linear-gradient(90deg,var(--accent),var(--lima));border-radius:2px;margin:0 0 34px}
-h2{font-family:"Source Serif 4",Georgia,serif;font-size:21px;font-weight:600;margin:32px 0 8px}
-p{margin:12px 0;color:var(--ink-2)}
-ul{margin:12px 0;padding-left:22px;color:var(--ink-2)}
-li{margin:7px 0}
-.caja{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:22px 24px;box-shadow:var(--shadow);margin:26px 0}
-.caja p:first-child{margin-top:0}
-.caja p:last-child{margin-bottom:0}
-.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;border-radius:9px;
-  padding:12px 22px;font-weight:600;font-size:15.5px}
-.btn:hover{background:var(--accent-ink)}
-@media (prefers-color-scheme:dark){.btn{color:#0E120F}}
-.centro{text-align:center;margin:34px 0}
+html,body{background:var(--bg)}
+body{margin:0;color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.02em;text-wrap:balance}
 a{color:var(--accent-ink)}
-@media (prefers-color-scheme:dark){a{color:var(--accent)}}
-footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:14px;text-align:center}
-footer a{margin:0 8px}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+/* barra superior */
+.barra{
+  position:sticky;top:0;z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border)
+}
+.barra .caja{
+  max-width:1060px;margin:0 auto;padding:13px 24px;display:flex;align-items:center;
+  justify-content:space-between;gap:16px
+}
+.marca{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.marca img{height:30px;width:auto;display:block}
+.marca .nom{font-family:var(--serif);font-weight:700;font-size:16px;line-height:1.1;letter-spacing:-.01em}
+.marca .sub{font-family:var(--mono);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted-2)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;
+  background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:7px;
+  padding:9px 18px;font-weight:600;font-size:14px;transition:background .12s
+}
+.btn:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+.btn.sec{background:transparent;color:var(--ink);border-color:var(--border-strong)}
+.btn.sec:hover{background:var(--surface-2);color:var(--ink)}
+.btn.grande{padding:12px 26px;font-size:15px}
+
+/* portada */
+.hero{max-width:1060px;margin:0 auto;padding:64px 24px 52px;text-align:center}
+.pastilla{
+  display:inline-flex;align-items:center;gap:7px;background:var(--accent-soft);color:var(--accent-ink);
+  border-radius:999px;padding:5px 13px;font-size:12px;font-weight:600;margin-bottom:22px
+}
+.pastilla i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:block}
+.hero h1{font-family:var(--serif);font-size:46px;font-weight:700;line-height:1.08;letter-spacing:-.025em}
+.hero p{color:var(--muted);font-size:18px;margin:16px auto 0;max-width:54ch}
+.acciones{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+.nota{font-size:12.5px;color:var(--muted-2);margin-top:16px}
+
+/* franja de datos */
+.franja{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--shell)}
+.franja .caja{
+  max-width:1060px;margin:0 auto;padding:22px 24px;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;text-align:center
+}
+.dato .n{font-size:24px;font-weight:600;letter-spacing:-.02em}
+.dato .t{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+/* secciones */
+.seccion{max-width:1060px;margin:0 auto;padding:56px 24px}
+.titulo{text-align:center;margin-bottom:34px}
+.titulo h2{font-size:26px;font-weight:600;letter-spacing:-.02em}
+.titulo p{color:var(--muted);margin:9px auto 0;max-width:56ch;font-size:15.5px}
+.tarjetas{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.tarjeta{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;
+  box-shadow:var(--sombra)
+}
+.tarjeta h3{font-size:15.5px;margin-bottom:7px}
+.tarjeta p{color:var(--muted);font-size:14px;margin:0}
+.tarjeta .icono{
+  width:34px;height:34px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);
+  display:grid;place-items:center;margin-bottom:14px
+}
+.tarjeta .icono svg{width:18px;height:18px;display:block}
+
+.texto{max-width:1060px;margin:0 auto;padding:0 24px 56px}
+.doscol{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start}
+.doscol h2{font-size:22px;margin-bottom:10px}
+.doscol p{color:var(--ink-2);margin:11px 0}
+.recuadro{
+  background:var(--shell);border:1px solid var(--border);border-radius:10px;padding:22px
+}
+.recuadro h3{font-size:15px;margin-bottom:9px}
+.recuadro p{color:var(--ink-2);font-size:14px;margin:9px 0}
+.recuadro p:last-child{margin-bottom:0}
+code{font-family:var(--mono);font-size:.88em;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+
+/* cierre */
+.cierre{border-top:1px solid var(--border);background:var(--shell)}
+.cierre .caja{max-width:1060px;margin:0 auto;padding:52px 24px;text-align:center}
+.cierre h2{font-size:24px;margin-bottom:10px}
+.cierre p{color:var(--muted);margin:0 auto 24px;max-width:48ch}
+
+footer{border-top:1px solid var(--border);background:var(--surface)}
+footer .caja{
+  max-width:1060px;margin:0 auto;padding:22px 24px;display:flex;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;color:var(--muted);font-size:13px
+}
+
+@media (max-width:760px){
+  .hero{padding:44px 20px 38px}
+  .hero h1{font-size:33px}
+  .hero p{font-size:16px}
+  .doscol{grid-template-columns:1fr;gap:24px}
+  .barra .caja{padding:11px 18px}
+  .marca .sub{display:none}
+}
 </style>
 </head>
 <body>
-<div class="hoja">
 
-  <img class="logo" src="/lockup.png" alt="Pinos Grandis">
-  <h1>Legajo Pinos Grandis</h1>
-  <p class="bajada">El sistema interno con el que Pinos Grandis lleva el legajo de su personal:
-  datos de cada trabajador, vencimientos de la documentación y los documentos escaneados.</p>
-  <div class="regla"></div>
-
-  <h2>Para qué sirve</h2>
-  <p>Pinos Grandis es una empresa forestal uruguaya. Buena parte de su gente trabaja en monte con
-  maquinaria y motosierra, y para eso hace falta documentación al día: carné de salud, libreta de conducir,
-  carné de motosierrista, certificado de primeros auxilios y constancia de alta en BPS.</p>
-  <p>Esta aplicación reemplaza la planilla que se llevaba a mano. Guarda una ficha por persona y avisa con
-  colores cuándo cada documento está por vencer, para que nadie salga a trabajar con algo vencido.</p>
-
-  <h2>Qué hace</h2>
-  <ul>
-    <li>Una ficha por trabajador, con sus datos personales y laborales.</li>
-    <li>El vencimiento de cada documento, con un semáforo que marca lo vencido y lo que vence en 30 o 60 días.</li>
-    <li>El PDF o la foto de cada documento, guardados en la carpeta de esa persona.</li>
-    <li>El registro de entregas de equipo de protección personal y su fecha de reposición.</li>
-  </ul>
-
-  <h2>Quién la usa</h2>
-  <p>Es una herramienta de uso interno. Entran únicamente las personas de administración y recursos humanos
-  de Pinos Grandis, con usuario y contraseña. No hay registro abierto ni acceso público a los legajos.</p>
-
+<header class="barra">
   <div class="caja">
-    <p><b>Sobre el acceso a Google Drive.</b> La aplicación guarda la información en una planilla de Google Sheets
-    y los documentos en carpetas de Google Drive, dentro de la cuenta de Google de la empresa. Para eso pide
-    un único permiso, <code>drive.file</code>, que le da acceso solamente a los archivos que ella misma crea.
-    No puede ver ni tocar el resto del contenido de esa cuenta de Drive.</p>
+    <a class="marca" href="/inicio">
+      <img src="/marca.png" alt="">
+      <span>
+        <span class="nom">Pinos Grandis</span>
+        <span class="sub" style="display:block">Legajo</span>
+      </span>
+    </a>
+    <a class="btn" href="/">Iniciar sesión</a>
   </div>
+</header>
 
-  <div class="centro">
-    <a class="btn" href="/">Entrar al sistema</a>
+<section class="hero">
+  <span class="pastilla"><i></i> Sistema interno · Pinos Grandis</span>
+  <h1>Legajo Pinos Grandis</h1>
+  <p>El legajo del personal en un solo lugar: los datos de cada trabajador, el vencimiento
+  de su documentación y los documentos escaneados.</p>
+  <div class="acciones">
+    <a class="btn grande" href="/">Iniciar sesión</a>
+    <a class="btn sec grande" href="#que-hace">Ver qué hace</a>
   </div>
+  <p class="nota">Acceso restringido al personal de administración y recursos humanos.</p>
+</section>
 
-  <footer>
-    Pinos Grandis · Uruguay
-    <br>
-    <a href="/privacidad">Política de privacidad</a>
-  </footer>
-
+<div class="franja">
+  <div class="caja">
+    <div class="dato"><div class="n">5</div><div class="t">documentos con vencimiento por persona</div></div>
+    <div class="dato"><div class="n">1</div><div class="t">carpeta en Drive por trabajador</div></div>
+    <div class="dato"><div class="n">30 / 60</div><div class="t">días de aviso antes del vencimiento</div></div>
+  </div>
 </div>
+
+<section class="seccion" id="que-hace">
+  <div class="titulo">
+    <h2>Qué hace</h2>
+    <p>Reemplaza la planilla que se llevaba a mano, con la ventaja de avisar antes de que algo se venza.</p>
+  </div>
+  <div class="tarjetas">
+    <div class="tarjeta">
+      <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+      <h3>Una ficha por trabajador</h3>
+      <p>Datos personales y laborales: documento, ingreso, categoría, función y el cliente donde presta servicio.</p>
+    </div>
+    <div class="tarjeta">
+      <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <h3>Vencimientos con semáforo</h3>
+      <p>Carné de salud, libretas de conducir, motosierrista y primeros auxilios. En rojo lo vencido, en ámbar lo que vence pronto.</p>
+    </div>
+    <div class="tarjeta">
+      <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg></div>
+      <h3>Documentos en Drive</h3>
+      <p>El PDF o la foto de cada documento se guarda en la carpeta de esa persona, dentro del Drive de la empresa.</p>
+    </div>
+    <div class="tarjeta">
+      <div class="icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <h3>Entregas de EPP</h3>
+      <p>Qué equipo de protección se entregó, cuándo, y en qué fecha corresponde reponerlo.</p>
+    </div>
+  </div>
+</section>
+
+<div class="texto">
+  <div class="doscol">
+    <div>
+      <h2>Por qué existe</h2>
+      <p>Pinos Grandis es una empresa forestal uruguaya. Buena parte de su gente trabaja en monte con
+      maquinaria y motosierra, y para eso hace falta documentación al día: carné de salud, libreta de
+      conducir, carné de motosierrista, certificado de primeros auxilios y constancia de alta en BPS.</p>
+      <p>Este sistema guarda una ficha por persona y avisa con colores cuándo cada documento está por
+      vencer, para que nadie salga a trabajar con algo vencido.</p>
+    </div>
+    <div class="recuadro">
+      <h3>Sobre el acceso a Google Drive</h3>
+      <p>La información se guarda en una planilla de Google Sheets y los documentos en carpetas de Google
+      Drive, dentro de la cuenta de la empresa.</p>
+      <p>Para eso el sistema pide un único permiso, <code>drive.file</code>, que le da acceso solamente a los
+      archivos que él mismo crea. No puede ver ni tocar el resto del contenido de esa cuenta de Drive.</p>
+    </div>
+  </div>
+</div>
+
+<div class="cierre">
+  <div class="caja">
+    <h2>¿Ya tenés usuario?</h2>
+    <p>El acceso es solo para el personal de administración y recursos humanos de Pinos Grandis.</p>
+    <a class="btn grande" href="/">Iniciar sesión</a>
+  </div>
+</div>
+
+<footer>
+  <div class="caja">
+    <span>Pinos Grandis · Uruguay</span>
+    <span><a href="/privacidad">Política de privacidad</a></span>
+  </div>
+</footer>
+
 </body>
 </html>
