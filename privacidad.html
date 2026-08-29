@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Política de privacidad · Legajo Pinos Grandis</title>
+<meta name="description" content="Política de privacidad de Legajo Pinos Grandis: qué datos maneja, dónde se guardan y qué permisos de Google usa.">
+<link rel="icon" href="/marca.png">
+<!--VERIFICACION-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+:root{
+  --bg:#F5F8F4;--surface:#FFFFFF;--surface-2:#EDF2EC;--border:#DCE5DA;
+  --ink:#14201A;--ink-2:#3B4A40;--muted:#6C7A6F;--accent:#006838;--accent-ink:#004F2A;--lima:#8BC53F;
+  --shadow:0 1px 2px rgba(20,32,26,.05),0 12px 30px -18px rgba(20,32,26,.3);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0E120F;--surface:#171C18;--surface-2:#1F261F;--border:#2B332C;
+  --ink:#E8EEE8;--ink-2:#C2CCC2;--muted:#8D9A8E;--accent:#4CB07A;--accent-ink:#8BD9AC;--lima:#A8D95F;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 30px -18px rgba(0,0,0,.8);
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.65 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.hoja{max-width:680px;margin:0 auto;padding:48px 22px 70px}
+img.logo{height:64px;display:block;margin:0 auto 22px}
+h1{font-family:"Source Serif 4",Georgia,serif;font-size:30px;font-weight:700;text-align:center;margin:0 0 6px;letter-spacing:-.015em}
+.fecha{text-align:center;color:var(--muted);font-size:14px;margin:0 0 26px}
+.regla{height:3px;background:linear-gradient(90deg,var(--accent),var(--lima));border-radius:2px;margin:0 0 32px}
+h2{font-family:"Source Serif 4",Georgia,serif;font-size:20px;font-weight:600;margin:30px 0 8px}
+p{margin:11px 0;color:var(--ink-2)}
+ul{margin:11px 0;padding-left:22px;color:var(--ink-2)}
+li{margin:6px 0}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.9em;background:var(--surface-2);
+  border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+.caja{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:20px 22px;box-shadow:var(--shadow);margin:24px 0}
+.caja p:first-child{margin-top:0}
+.caja p:last-child{margin-bottom:0}
+a{color:var(--accent-ink)}
+@media (prefers-color-scheme:dark){a{color:var(--accent)}}
+footer{margin-top:42px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+<div class="hoja">
+
+  <img class="logo" src="/marca.png" alt="">
+  <h1>Política de privacidad</h1>
+  <p class="fecha">Legajo Pinos Grandis</p>
+  <div class="regla"></div>
+
+  <p>Legajo Pinos Grandis es una aplicación de uso interno de la empresa Pinos Grandis, Uruguay, para
+  administrar el legajo de su propio personal. No se ofrece al público ni tiene registro abierto.</p>
+
+  <h2>Qué información maneja</h2>
+  <p>La aplicación guarda los datos que la empresa ya lleva sobre sus trabajadores para cumplir con sus
+  obligaciones laborales y de seguridad:</p>
+  <ul>
+    <li>Nombre, documento de identidad y fecha de nacimiento.</li>
+    <li>Datos laborales: empresa, cliente donde presta servicio, categoría, función y fecha de ingreso.</li>
+    <li>Vencimientos de la documentación habilitante: carné de salud, libreta de conducir, carné de
+      motosierrista, primeros auxilios y constancia de alta en BPS.</li>
+    <li>Los documentos escaneados correspondientes, en PDF o imagen.</li>
+    <li>El registro de entrega de equipo de protección personal.</li>
+  </ul>
+
+  <h2>Dónde se guarda</h2>
+  <p>Todo se guarda en la cuenta de Google de la empresa: los datos en una planilla de Google Sheets y los
+  documentos en carpetas de Google Drive, una por persona. La aplicación no tiene base de datos propia ni
+  copia esa información a ningún otro lado.</p>
+
+  <h2>Qué permisos de Google usa y para qué</h2>
+  <div class="caja">
+    <p>La aplicación solicita un único permiso: <code>https://www.googleapis.com/auth/drive.file</code>.</p>
+    <p>Ese permiso le da acceso <b>exclusivamente a los archivos y carpetas que la propia aplicación crea</b>.
+    Lo usa para crear la carpeta de cada trabajador, guardar ahí los documentos que sube el personal
+    administrativo, y leer y escribir la planilla del legajo.</p>
+    <p>La aplicación <b>no puede ver, leer, modificar ni eliminar</b> ningún otro archivo de esa cuenta de
+    Google Drive, ni el correo, ni los contactos, ni el calendario, ni ningún otro servicio de Google.</p>
+  </div>
+
+  <h2>Con quién se comparte</h2>
+  <p>Con nadie. La información no se vende, no se cede a terceros, no se usa con fines publicitarios y no se
+  emplea para entrenar modelos de inteligencia artificial. Solo acceden las personas de la empresa que tienen
+  usuario y contraseña en el sistema.</p>
+
+  <h2>Quién puede acceder</h2>
+  <p>El acceso está restringido al personal de administración y recursos humanos de Pinos Grandis, mediante
+  usuario y contraseña. Las contraseñas se guardan cifradas con un resumen criptográfico irreversible; nunca
+  en texto legible.</p>
+
+  <h2>Cuánto tiempo se conserva</h2>
+  <p>Los legajos se conservan mientras dure la relación laboral y durante el plazo que exige la normativa
+  laboral uruguaya. Los trabajadores dados de baja quedan marcados como tales, sin borrarse.</p>
+
+  <h2>Derechos de las personas</h2>
+  <p>Cualquier trabajador de Pinos Grandis puede solicitar a la empresa acceder a los datos que figuran en su
+  legajo, pedir que se corrija lo que esté equivocado o que se elimine lo que no corresponda conservar.
+  El pedido se hace directamente en la administración de la empresa.</p>
+
+  <h2>Contacto</h2>
+  <p>Por cualquier consulta sobre esta política o sobre el tratamiento de los datos, escribir a la
+  administración de Pinos Grandis<!--CORREO-->.</p>
+
+  <footer>
+    <a href="/inicio">Volver al inicio</a>
+  </footer>
+
+</div>
+</body>
+</html>

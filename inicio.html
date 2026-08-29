@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legajo Pinos Grandis</title>
+<meta name="description" content="Legajo Pinos Grandis es el sistema interno de Pinos Grandis para llevar el legajo del personal: datos, vencimientos de documentación y documentos escaneados.">
+<link rel="icon" href="/marca.png">
+<!--VERIFICACION-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+:root{
+  --bg:#F5F8F4;--surface:#FFFFFF;--surface-2:#EDF2EC;--border:#DCE5DA;
+  --ink:#14201A;--ink-2:#3B4A40;--muted:#6C7A6F;--accent:#006838;--accent-ink:#004F2A;--lima:#8BC53F;
+  --shadow:0 1px 2px rgba(20,32,26,.05),0 12px 30px -18px rgba(20,32,26,.3);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0E120F;--surface:#171C18;--surface-2:#1F261F;--border:#2B332C;
+  --ink:#E8EEE8;--ink-2:#C2CCC2;--muted:#8D9A8E;--accent:#4CB07A;--accent-ink:#8BD9AC;--lima:#A8D95F;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 30px -18px rgba(0,0,0,.8);
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16.5px/1.65 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.hoja{max-width:680px;margin:0 auto;padding:56px 22px 70px}
+img.logo{height:92px;display:block;margin:0 auto 26px}
+h1{font-family:"Source Serif 4",Georgia,serif;font-size:34px;font-weight:700;text-align:center;margin:0 0 10px;letter-spacing:-.015em}
+.bajada{text-align:center;color:var(--muted);font-size:17px;margin:0 auto 30px;max-width:52ch}
+.regla{height:3px;background:linear-gradient(90deg,var(--accent),var(--lima));border-radius:2px;margin:0 0 34px}
+h2{font-family:"Source Serif 4",Georgia,serif;font-size:21px;font-weight:600;margin:32px 0 8px}
+p{margin:12px 0;color:var(--ink-2)}
+ul{margin:12px 0;padding-left:22px;color:var(--ink-2)}
+li{margin:7px 0}
+.caja{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:22px 24px;box-shadow:var(--shadow);margin:26px 0}
+.caja p:first-child{margin-top:0}
+.caja p:last-child{margin-bottom:0}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;border-radius:9px;
+  padding:12px 22px;font-weight:600;font-size:15.5px}
+.btn:hover{background:var(--accent-ink)}
+@media (prefers-color-scheme:dark){.btn{color:#0E120F}}
+.centro{text-align:center;margin:34px 0}
+a{color:var(--accent-ink)}
+@media (prefers-color-scheme:dark){a{color:var(--accent)}}
+footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:14px;text-align:center}
+footer a{margin:0 8px}
+</style>
+</head>
+<body>
+<div class="hoja">
+
+  <img class="logo" src="/lockup.png" alt="Pinos Grandis">
+  <h1>Legajo Pinos Grandis</h1>
+  <p class="bajada">El sistema interno con el que Pinos Grandis lleva el legajo de su personal:
+  datos de cada trabajador, vencimientos de la documentación y los documentos escaneados.</p>
+  <div class="regla"></div>
+
+  <h2>Para qué sirve</h2>
+  <p>Pinos Grandis es una empresa forestal uruguaya. Buena parte de su gente trabaja en monte con
+  maquinaria y motosierra, y para eso hace falta documentación al día: carné de salud, libreta de conducir,
+  carné de motosierrista, certificado de primeros auxilios y constancia de alta en BPS.</p>
+  <p>Esta aplicación reemplaza la planilla que se llevaba a mano. Guarda una ficha por persona y avisa con
+  colores cuándo cada documento está por vencer, para que nadie salga a trabajar con algo vencido.</p>
+
+  <h2>Qué hace</h2>
+  <ul>
+    <li>Una ficha por trabajador, con sus datos personales y laborales.</li>
+    <li>El vencimiento de cada documento, con un semáforo que marca lo vencido y lo que vence en 30 o 60 días.</li>
+    <li>El PDF o la foto de cada documento, guardados en la carpeta de esa persona.</li>
+    <li>El registro de entregas de equipo de protección personal y su fecha de reposición.</li>
+  </ul>
+
+  <h2>Quién la usa</h2>
+  <p>Es una herramienta de uso interno. Entran únicamente las personas de administración y recursos humanos
+  de Pinos Grandis, con usuario y contraseña. No hay registro abierto ni acceso público a los legajos.</p>
+
+  <div class="caja">
+    <p><b>Sobre el acceso a Google Drive.</b> La aplicación guarda la información en una planilla de Google Sheets
+    y los documentos en carpetas de Google Drive, dentro de la cuenta de Google de la empresa. Para eso pide
+    un único permiso, <code>drive.file</code>, que le da acceso solamente a los archivos que ella misma crea.
+    No puede ver ni tocar el resto del contenido de esa cuenta de Drive.</p>
+  </div>
+
+  <div class="centro">
+    <a class="btn" href="/">Entrar al sistema</a>
+  </div>
+
+  <footer>
+    Pinos Grandis · Uruguay
+    <br>
+    <a href="/privacidad">Política de privacidad</a>
+  </footer>
+
+</div>
+</body>
+</html>
