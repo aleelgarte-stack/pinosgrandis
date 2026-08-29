@@ -274,8 +274,8 @@ function vPersonal(){
       sel("fEstado",["Activo","Baja"],fEstado,"Todos los estados")+
     '</div>'+
     '<div class="card"><div class="tablewrap"><table><thead><tr>'+
-      '<th>Persona</th><th>Servicio</th><th>Función</th><th>C. salud</th><th>Motosierrista</th>'+
-      '<th>Libreta H</th><th>Libreta A</th><th>1ros aux.</th><th>Alta BPS</th><th>EPP</th>'+
+      '<th>Persona</th><th>Servicio</th><th>Función</th><th>Salud</th><th>Motosierra</th>'+
+      '<th>Lib. H</th><th>Lib. A</th><th>1ros aux.</th><th>BPS</th><th>EPP</th>'+
     '</tr></thead><tbody>'+(rows||'<tr><td colspan="10"><div class="empty">No hay fichas que coincidan con el filtro.</div></td></tr>')+
     '</tbody></table></div></div>'+legend();
 }
