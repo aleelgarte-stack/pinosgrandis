@@ -95,7 +95,10 @@ app.use((req, res, next) => {
   const e = ESTATICOS[req.path];
   if (!e) return next();
   res.setHeader("content-type", e[1]);
-  res.setHeader("cache-control", e[0].endsWith(".html") ? "no-cache" : "public, max-age=3600");
+  /* Las imágenes se pueden cachear; el código y las páginas no, para que un
+     cambio publicado se vea enseguida sin tener que forzar la recarga. */
+  const imagen = /\.(png|jpg|jpeg|svg|ico|woff2?)$/.test(e[0]);
+  res.setHeader("cache-control", imagen ? "public, max-age=86400" : "no-cache");
   res.sendFile(path.join(aqui, e[0]));
 });
 
