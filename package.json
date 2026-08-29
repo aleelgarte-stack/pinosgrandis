@@ -1,0 +1,21 @@
+{
+  "name": "legajo-pinos-grandis",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Legajo de personal de Pinos Grandis sobre Google Drive y Google Sheets",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --env-file=.env --watch server.js",
+    "clave": "node scripts/clave.mjs",
+    "token": "node scripts/token.mjs",
+    "importar": "node scripts/importar.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.2"
+  }
+}

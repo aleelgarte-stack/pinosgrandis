@@ -1,0 +1,26 @@
+# Configuración del servicio en Render.
+# Si creás el servicio desde el panel, Render lee este archivo y completa todo solo.
+services:
+  - type: web
+    name: legajo-pinos-grandis
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/salud
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      # Se genera solo, no hay que inventarlo
+      - key: SESSION_SECRET
+        generateValue: true
+      # Estos cuatro se cargan a mano en el panel de Render
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REFRESH_TOKEN
+        sync: false
+      - key: USUARIOS
+        sync: false
