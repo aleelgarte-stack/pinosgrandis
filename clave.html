@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crear usuarios · Legajo Pinos Grandis</title>
+<link rel="icon" href="/marca.png">
+<style>
+:root{
+  --bg:#F5F8F4;--surface:#FFFFFF;--surface-2:#EDF2EC;--border:#DCE5DA;--border-strong:#C2CFBF;
+  --ink:#14201A;--ink-2:#3B4A40;--muted:#6C7A6F;--accent:#006838;--accent-ink:#004F2A;--lima:#8BC53F;
+  --warn:#9A6410;--warn-bg:#FAEEDA;--crit:#A63028;
+  --shadow:0 1px 2px rgba(20,32,26,.05),0 12px 30px -18px rgba(20,32,26,.3);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E120F;--surface:#171C18;--surface-2:#1F261F;--border:#2B332C;--border-strong:#3C463D;
+  --ink:#E8EEE8;--ink-2:#C2CCC2;--muted:#8D9A8E;--accent:#4CB07A;--accent-ink:#8BD9AC;
+  --warn:#D6A657;--warn-bg:#2A2216;--crit:#E8817A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 30px -18px rgba(0,0,0,.8);
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.6 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  display:flex;justify-content:center;padding:36px 20px 80px}
+.hoja{width:100%;max-width:620px}
+img.logo{height:74px;display:block;margin:0 auto 20px}
+h1{font-size:24px;margin:0 0 6px;text-align:center}
+.sub{color:var(--muted);font-size:15px;text-align:center;margin:0 0 26px}
+.caja{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:24px;box-shadow:var(--shadow);margin-bottom:18px}
+h2{font-size:17px;margin:0 0 14px}
+label{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:5px}
+input{width:100%;padding:10px 12px;font:inherit;font-size:15px;background:var(--surface);color:var(--ink);
+  border:1px solid var(--border-strong);border-radius:8px;margin-bottom:14px}
+input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,104,56,.12)}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 18px;
+  font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--accent-ink)}
+.btn.sec{background:transparent;color:var(--ink);border:1px solid var(--border-strong)}
+.btn:disabled{opacity:.6;cursor:default}
+.salida{font-family:ui-monospace,Consolas,"SF Mono",monospace;font-size:12.5px;background:var(--surface-2);
+  border:1px solid var(--border);border-radius:9px;padding:14px;word-break:break-all;margin:14px 0 12px;
+  white-space:pre-wrap;display:none}
+.salida.on{display:block}
+.fila{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.lista{margin:0 0 14px;padding-left:20px;font-size:14.5px;color:var(--ink-2)}
+.lista li{margin:5px 0}
+.aviso{background:var(--warn-bg);color:var(--warn);border-radius:9px;padding:13px 15px;font-size:14px;margin-top:16px}
+.err{color:var(--crit);font-size:14px;min-height:20px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.88em;background:var(--surface-2);
+  border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+.pie{text-align:center;color:var(--muted);font-size:13px;margin-top:26px}
+</style>
+</head>
+<body>
+<div class="hoja">
+
+  <img class="logo" src="/lockup.png" alt="Pinos Grandis">
+  <h1>Crear los usuarios del sistema</h1>
+  <p class="sub">Esta página arma las dos variables que hay que cargar en Render.<br>
+  Las contraseñas se procesan acá adentro, en tu navegador: no viajan a ningún lado.</p>
+
+  <div class="caja">
+    <h2>1 · Personas que van a entrar</h2>
+    <div id="personas"></div>
+    <div class="fila">
+      <button class="btn sec" id="agregar" type="button">+ Agregar otra persona</button>
+      <button class="btn" id="generar" type="button">Generar</button>
+    </div>
+    <div class="err" id="err"></div>
+    <div class="salida" id="salidaU"></div>
+    <div class="fila" id="accionesU" style="display:none">
+      <button class="btn sec" id="copiarU" type="button">Copiar</button>
+      <span style="font-size:13.5px;color:var(--muted)">Pegalo en Render como variable <code>USUARIOS</code></span>
+    </div>
+  </div>
+
+  <div class="caja">
+    <h2>2 · Clave de firma de las sesiones</h2>
+    <p style="margin-top:0;font-size:14.5px;color:var(--ink-2)">Un texto largo al azar. No hay que recordarlo ni anotarlo en ningún lado.</p>
+    <div class="fila">
+      <button class="btn" id="generarS" type="button">Generar</button>
+    </div>
+    <div class="salida" id="salidaS"></div>
+    <div class="fila" id="accionesS" style="display:none">
+      <button class="btn sec" id="copiarS" type="button">Copiar</button>
+      <span style="font-size:13.5px;color:var(--muted)">Pegalo en Render como variable <code>SESSION_SECRET</code></span>
+    </div>
+  </div>
+
+  <div class="aviso">
+    Anotá las contraseñas donde las guardes habitualmente. Acá no quedan: lo que se genera es un resumen
+    del que no se puede volver atrás, así que si se pierde una hay que generar el usuario de nuevo.
+  </div>
+
+  <p class="pie">Legajo Pinos Grandis</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+var cont=document.getElementById("personas");
+
+function fila(n){
+  var d=document.createElement("div");
+  d.innerHTML=
+    '<label>Usuario <span style="font-weight:400;color:var(--muted)">— con el que escribe para entrar</span></label>'+
+    '<input class="u" type="text" autocapitalize="none" spellcheck="false" placeholder="rrhh">'+
+    '<label>Nombre visible</label>'+
+    '<input class="n" type="text" placeholder="Marcela — RRHH">'+
+    '<label>Contraseña <span style="font-weight:400;color:var(--muted)">— mínimo 8 caracteres</span></label>'+
+    '<input class="c" type="text" placeholder="una contraseña larga">';
+  if(n>0) d.style.borderTop="1px solid var(--border)", d.style.paddingTop="16px", d.style.marginTop="4px";
+  cont.appendChild(d);
+}
+fila(0);
+document.getElementById("agregar").addEventListener("click",function(){ fila(cont.children.length); });
+
+function b64(buf){
+  return btoa(String.fromCharCode.apply(null,new Uint8Array(buf)))
+    .replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+async function derivar(clave,sal){
+  var material=await crypto.subtle.importKey("raw",new TextEncoder().encode(clave),"PBKDF2",false,["deriveBits"]);
+  var bits=await crypto.subtle.deriveBits(
+    {name:"PBKDF2",hash:"SHA-256",salt:sal,iterations:200000},material,256);
+  return b64(bits);
+}
+
+document.getElementById("generar").addEventListener("click",async function(){
+  var err=document.getElementById("err"), btn=this;
+  err.textContent="";
+  var lista=[];
+  for(var i=0;i<cont.children.length;i++){
+    var d=cont.children[i];
+    var u=d.querySelector(".u").value.trim();
+    var n=d.querySelector(".n").value.trim();
+    var c=d.querySelector(".c").value;
+    if(!u&&!c) continue;
+    if(!u){ err.textContent="Falta el usuario en una de las personas."; return; }
+    if(c.length<8){ err.textContent="La contraseña de "+u+" tiene que tener al menos 8 caracteres."; return; }
+    lista.push({usuario:u,nombre:n||u,clave:c});
+  }
+  if(!lista.length){ err.textContent="Cargá al menos una persona."; return; }
+
+  btn.disabled=true; btn.textContent="Generando…";
+  try{
+    var salida=[];
+    for(var k=0;k<lista.length;k++){
+      var sal=crypto.getRandomValues(new Uint8Array(16));
+      salida.push({usuario:lista[k].usuario,nombre:lista[k].nombre,
+        sal:b64(sal),hash:await derivar(lista[k].clave,sal)});
+    }
+    var s=document.getElementById("salidaU");
+    s.textContent=JSON.stringify(salida);
+    s.classList.add("on");
+    document.getElementById("accionesU").style.display="flex";
+  }catch(e){ err.textContent="No se pudo generar: "+e.message; }
+  finally{ btn.disabled=false; btn.textContent="Generar"; }
+});
+
+document.getElementById("generarS").addEventListener("click",function(){
+  var s=document.getElementById("salidaS");
+  s.textContent=b64(crypto.getRandomValues(new Uint8Array(48)));
+  s.classList.add("on");
+  document.getElementById("accionesS").style.display="flex";
+});
+
+function copiar(idTexto,boton){
+  document.getElementById(boton).addEventListener("click",function(){
+    var t=document.getElementById(idTexto).textContent, b=this;
+    navigator.clipboard.writeText(t).then(function(){
+      b.textContent="Copiado"; setTimeout(function(){ b.textContent="Copiar"; },1800);
+    });
+  });
+}
+copiar("salidaU","copiarU");
+copiar("salidaS","copiarS");
+})();
+</script>
+</body>
+</html>

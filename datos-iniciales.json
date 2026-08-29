@@ -1,0 +1,1040 @@
+{
+ "personas": [
+  {
+   "nombre": "CARLOS DANIEL FERREIRA NOBLE",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "4.564.156-6",
+   "fechaNac": "1984-08-29",
+   "ingreso": "2018-03-05",
+   "categoria": "Maquinista especializado",
+   "funcion": "Maquinista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2025-12-16",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": false
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "EDERSON FABRICIO TEJERA MARIN",
+   "empresa": "Pinos Grandis",
+   "servicio": "LUMIN",
+   "documento": "4.265.535-2",
+   "fechaNac": "1982-07-18",
+   "ingreso": "2017-12-27",
+   "categoria": "Maquinista especializado",
+   "funcion": "Maquinista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2026-11-26",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": false
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "2025-11-07",
+    "na": false,
+    "emisor": "LUMIN"
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "ERICO - SOUZA RIBEIRO",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "3.733.473-9",
+   "fechaNac": "1969-06-27",
+   "ingreso": "2018-04-05",
+   "categoria": "Maquinista especializado",
+   "funcion": "Maquinista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2027-07-28",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": false
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "JULIO CESAR RODRIGUEZ ROSA",
+   "empresa": "Pinos Grandis",
+   "servicio": "LUMIN",
+   "documento": "4.589.303-0",
+   "fechaNac": "1980-10-08",
+   "ingreso": "2018-01-17",
+   "categoria": "Maquinista especializado",
+   "funcion": "Maquinista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2028-03-23",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "2028-07-16",
+    "na": false
+   },
+   "libA": {
+    "vto": "2035-10-10",
+    "na": false
+   },
+   "pa": {
+    "vto": "2025-11-07",
+    "na": false,
+    "emisor": "LUMIN"
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "LUIS ALBERTO BERTIZ BORGES",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "4.426.801-6",
+   "fechaNac": "1979-06-22",
+   "ingreso": "2017-12-27",
+   "categoria": "Maquinista especializado",
+   "funcion": "Maquinista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2027-09-29",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": false
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "MILTON - MELENDEZ MELLO",
+   "empresa": "Pinos Grandis",
+   "servicio": "LUMIN",
+   "documento": "4.624.155-3",
+   "fechaNac": "1978-08-09",
+   "ingreso": "2024-08-02",
+   "categoria": "Maquinista especializado",
+   "funcion": "Maquinista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2028-05-13",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "2029-04-12",
+    "na": false
+   },
+   "libA": {
+    "vto": "2033-03-13",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "RUBEN ARIEL SILVA CUELLO",
+   "empresa": "Pinos Grandis",
+   "servicio": "LUMIN",
+   "documento": "4.230.534-5",
+   "fechaNac": "1977-11-07",
+   "ingreso": "2022-03-21",
+   "categoria": "Maquinista especializado",
+   "funcion": "Maquinista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2027-06-20",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": false
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "2025-11-07",
+    "na": false,
+    "emisor": "LUMIN"
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "SILVIO GABRIEL ANTUNEZ -",
+   "empresa": "Pinos Grandis",
+   "servicio": "LUMIN",
+   "documento": "3.949.733-5",
+   "fechaNac": "1981-09-24",
+   "ingreso": "2022-03-07",
+   "categoria": "Maquinista especializado",
+   "funcion": "Maquinista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2027-09-08",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": false
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "ALEJANDRO - GOMEZ MAZONDO",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "4.731.715-3",
+   "fechaNac": "1979-09-07",
+   "ingreso": "2017-12-27",
+   "categoria": "Maquinista ll",
+   "funcion": "Motosierrista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2026-11-25",
+    "na": false
+   },
+   "moto": {
+    "vto": "2027-06-11",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "ALFREDO DANIEL MENDEZ FABRA",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "4.569.990-5",
+   "fechaNac": "1985-05-07",
+   "ingreso": "2017-12-27",
+   "categoria": "Maquinista ll",
+   "funcion": "Motosierrista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2026-08-05",
+    "na": false
+   },
+   "moto": {
+    "vto": "2028-07-25",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "JOSE IGNACIO ACOSTA SANDIN",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "5.088.156-5",
+   "fechaNac": "1995-02-19",
+   "ingreso": "2022-05-13",
+   "categoria": "Maquinista ll",
+   "funcion": "Peón",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2026-10-30",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "JUAN ROSIBEL DAMACENO GUEDES",
+   "empresa": "Pinos Grandis",
+   "servicio": "",
+   "documento": "2.881.332-8",
+   "fechaNac": "1963-09-30",
+   "ingreso": "2018-01-31",
+   "categoria": "Maquinista ll",
+   "funcion": "Motosierrista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "",
+    "na": false
+   },
+   "moto": {
+    "vto": "2026-08-08",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "LEONARDO MOASIR BARBOZA BUDES",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "4.446.805-4",
+   "fechaNac": "1988-01-21",
+   "ingreso": "2018-01-31",
+   "categoria": "Maquinista ll",
+   "funcion": "Motosierrista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2028-06-08",
+    "na": false
+   },
+   "moto": {
+    "vto": "2027-06-11",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "MARCOS ANTONIO RODRIGUEZ DAMASENO",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "4.677.973-6",
+   "fechaNac": "1985-07-21",
+   "ingreso": "2025-08-13",
+   "categoria": "Maquinista ll",
+   "funcion": "Motosierrista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2027-02-06",
+    "na": false
+   },
+   "moto": {
+    "vto": "2027-08-18",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "2025-11-07",
+    "na": false,
+    "emisor": "LUMIN"
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "MARTIN NICOLAS LOPEZ LEITES",
+   "empresa": "Pinos Grandis",
+   "servicio": "LUMIN",
+   "documento": "4.438.094-3",
+   "fechaNac": "1992-07-03",
+   "ingreso": "2023-11-27",
+   "categoria": "Maquinista ll",
+   "funcion": "Motosierrista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2028-04-07",
+    "na": false
+   },
+   "moto": {
+    "vto": "2027-06-11",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "WILMER FABIAN RODRIGUEZ DAMASENO",
+   "empresa": "Pinos Grandis",
+   "servicio": "LUMIN",
+   "documento": "4.677.974-2",
+   "fechaNac": "1984-04-25",
+   "ingreso": "2017-12-27",
+   "categoria": "Maquinista ll",
+   "funcion": "Motosierrista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2028-03-23",
+    "na": false
+   },
+   "moto": {
+    "vto": "2027-06-03",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "2035-06-04",
+    "na": false
+   },
+   "pa": {
+    "vto": "2025-11-07",
+    "na": false,
+    "emisor": "LUMIN"
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "WILSON DAVID GUEDES LEMOS",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "4.387.003-0",
+   "fechaNac": "1982-03-07",
+   "ingreso": "2024-03-18",
+   "categoria": "Maquinista ll",
+   "funcion": "Motosierrista",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2026-11-25",
+    "na": false
+   },
+   "moto": {
+    "vto": "2026-11-01",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "ALEX ABRAN GOMEZ ANTUNEZ",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "5.286.698-1",
+   "fechaNac": "2002-11-24",
+   "ingreso": "2022-02-21",
+   "categoria": "Peón Común",
+   "funcion": "Peón",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2026-10-30",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "ANDERSON DAVID GUEDES",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "5.183.784-4",
+   "fechaNac": "1999-07-19",
+   "ingreso": "2026-06-17",
+   "categoria": "Peón Común",
+   "funcion": "Peón",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2026-09-27",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": false
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "CARLOS FRANCISCO BARBOZA BUDES",
+   "empresa": "Pinos Grandis",
+   "servicio": "FYMNSA",
+   "documento": "4.446.804-8",
+   "fechaNac": "1978-04-05",
+   "ingreso": "2024-02-02",
+   "categoria": "Peón Común",
+   "funcion": "Peón",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2026-11-25",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "JORGE EDUARDO MARECO FRUSTACCI",
+   "empresa": "Pinos Grandis",
+   "servicio": "LUMIN",
+   "documento": "3.381.281-6",
+   "fechaNac": "1982-10-25",
+   "ingreso": "",
+   "categoria": "Peón Común",
+   "funcion": "Peón",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2026-10-02",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "2025-11-07",
+    "na": false,
+    "emisor": "LUMIN"
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "WANDER MAURICIO MARTINEZ NUÑEZ",
+   "empresa": "Pinos Grandis",
+   "servicio": "LUMIN",
+   "documento": "5.052.915-9",
+   "fechaNac": "1993-10-31",
+   "ingreso": "2023-03-22",
+   "categoria": "Peón Común",
+   "funcion": "Peón",
+   "estado": "Activo",
+   "salud": {
+    "vto": "2027-01-16",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "2025-11-07",
+    "na": false,
+    "emisor": "LUMIN"
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "JUAN MANUEL LORENZO DELGADO",
+   "empresa": "Pinos Grandis",
+   "servicio": "DIRECTOR",
+   "documento": "4.359.717-9",
+   "fechaNac": "1991-01-31",
+   "ingreso": "2018-08-27",
+   "categoria": "Titular",
+   "funcion": "Dirección",
+   "estado": "Activo",
+   "salud": {
+    "vto": "",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "MARCELO ALEJANDRO DE LEON BONO",
+   "empresa": "Pinos Grandis",
+   "servicio": "DIRECTOR",
+   "documento": "1.929.379-3",
+   "fechaNac": "1973-09-25",
+   "ingreso": "2017-07-14",
+   "categoria": "Titular",
+   "funcion": "Dirección",
+   "estado": "Activo",
+   "salud": {
+    "vto": "",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "NESTOR ALFREDO ACUÑA BARBOZA",
+   "empresa": "Pinos Grandis",
+   "servicio": "DIRECTOR",
+   "documento": "3.979.047-4",
+   "fechaNac": "1975-01-29",
+   "ingreso": "2017-07-14",
+   "categoria": "Titular",
+   "funcion": "Dirección",
+   "estado": "Activo",
+   "salud": {
+    "vto": "",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": true
+   },
+   "libH": {
+    "vto": "",
+    "na": true
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "Leo Javier Olivera Gómez",
+   "empresa": "Vandes",
+   "servicio": "FYMNSA",
+   "documento": "5.511.592-5",
+   "fechaNac": "1992-08-29",
+   "ingreso": "2023-05-18",
+   "categoria": "Maquinista especializado",
+   "funcion": "",
+   "estado": "Activo",
+   "salud": {
+    "vto": "",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": false
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "Elías Virgilly Chocho Echeverriaga",
+   "empresa": "Vandes",
+   "servicio": "FYMNSA",
+   "documento": "4.398.125-5",
+   "fechaNac": "1982-09-01",
+   "ingreso": "2026-01-20",
+   "categoria": "Maquinista especializado",
+   "funcion": "",
+   "estado": "Activo",
+   "salud": {
+    "vto": "",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": false
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  },
+  {
+   "nombre": "Leonardo Javier Viera Bica",
+   "empresa": "Vandes",
+   "servicio": "FYMNSA",
+   "documento": "4.930.743-1",
+   "fechaNac": "1998-07-15",
+   "ingreso": "2026-08-03",
+   "categoria": "Obrero",
+   "funcion": "",
+   "estado": "Activo",
+   "salud": {
+    "vto": "",
+    "na": false
+   },
+   "moto": {
+    "vto": "",
+    "na": false
+   },
+   "libH": {
+    "vto": "",
+    "na": false
+   },
+   "libA": {
+    "vto": "",
+    "na": false
+   },
+   "pa": {
+    "vto": "",
+    "na": false,
+    "emisor": ""
+   },
+   "bps": {
+    "tiene": false,
+    "numero": "",
+    "fecha": ""
+   }
+  }
+ ]
+}

@@ -9,10 +9,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "node --env-file=.env --watch server.js",
-    "clave": "node scripts/clave.mjs",
-    "token": "node scripts/token.mjs",
-    "importar": "node scripts/importar.mjs"
+    "dev": "node --env-file=.env --watch server.js"
   },
   "dependencies": {
     "express": "^4.21.2",

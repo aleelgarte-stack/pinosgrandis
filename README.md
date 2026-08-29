@@ -12,38 +12,61 @@ Google Sheets** y los documentos en **carpetas de Google Drive**, una por person
 
 Guía completa paso a paso: **`GUIA.html`** — abrila en el navegador.
 
-## Puesta en marcha, en resumen
+## Instalación, en resumen
 
-```bash
-npm install
+Todo se hace desde el navegador, sin instalar nada:
 
-# 1. Usuarios del sistema (uno por persona que vaya a entrar)
-npm run clave -- rrhh "RRHH" tuContraseñaLarga
+1. Subir estos archivos a un repositorio de GitHub.
+2. Crear un Web Service en Render apuntando a ese repositorio.
+3. Abrir `TU-SITIO.onrender.com/clave.html` para generar los usuarios y la clave
+   de sesión, y cargarlos en Render como variables de entorno.
+4. Crear el cliente OAuth en Google Cloud y cargar sus dos valores en Render.
+5. Entrar al sistema, tocar **Conectar con Google** y pegar el token que devuelve
+   en la variable `GOOGLE_REFRESH_TOKEN`.
+6. Tocar **Cargar las 28 personas**.
 
-# 2. Permiso permanente de Google (ver la guía para crear el cliente OAuth)
-npm run token
-```
-
-Después: subir el repositorio a GitHub, crear el Web Service en Render apuntando
-a ese repositorio, y cargar las variables de entorno en **Environment**:
+### Variables de entorno
 
 | Variable | De dónde sale |
 |---|---|
 | `GOOGLE_CLIENT_ID` | Cliente OAuth de Google Cloud |
 | `GOOGLE_CLIENT_SECRET` | Cliente OAuth de Google Cloud |
-| `GOOGLE_REFRESH_TOKEN` | `npm run token` |
-| `SESSION_SECRET` | Cualquier texto largo al azar |
-| `USUARIOS` | `npm run clave` |
+| `GOOGLE_REFRESH_TOKEN` | Botón **Conectar con Google** dentro del sistema |
+| `SESSION_SECRET` | Página `/clave.html` |
+| `USUARIOS` | Página `/clave.html` |
 
-Con el servicio en línea, cargar las 28 personas una sola vez:
+## Estructura
 
-```bash
-npm run importar -- https://TU-SERVICIO.onrender.com rrhh tuContraseñaLarga
+Todos los archivos van sueltos en la raíz del repositorio, sin subcarpetas.
+
+**Servidor** — nunca se sirve al navegador:
+
 ```
+server.js      Rutas de la API, estáticos y conexión OAuth con Google
+google.js      Llamadas a Drive y Sheets
+datos.js       Modelo sobre la planilla: leer, escribir, carpetas, documentos
+auth.js        Ingreso con usuario y contraseña, sesión firmada
+```
+
+**Web** — lo que ve el navegador:
+
+```
+index.html             La aplicación
+legajo.js              Su código
+estilos.css            Sus estilos
+clave.html             Generador de usuarios y clave de sesión
+marca.png, lockup.png  El logo
+datos-iniciales.json   Las 28 personas de BD PERSONAL 2025
+```
+
+**Configuración**: `package.json`, `render.yaml`, `.gitignore`, `.env.ejemplo`.
 
 ## Probar en tu computadora
 
+Hace falta Node 20 o superior. No es necesario para usar el sistema.
+
 ```bash
+npm install
 cp .env.ejemplo .env     # y completá los valores
 npm run dev              # queda en http://localhost:3000
 ```
@@ -62,18 +85,6 @@ Pinos Grandis — Legajos/          ← carpeta raíz
 
 Uno solo: `drive.file`. La aplicación **solo ve los archivos que ella misma
 crea**. No puede leer ni tocar el resto del Drive de esa cuenta.
-
-## Estructura
-
-```
-server.js        Servidor Express: rutas de la API y la web
-src/google.js    Conexión con Drive y Sheets
-src/datos.js     Modelo sobre la planilla: leer, escribir, carpetas, documentos
-src/auth.js      Ingreso con usuario y contraseña, sesión firmada
-public/          La aplicación web (HTML, CSS, JS, logo)
-scripts/         Utilidades de configuración e importación
-render.yaml      Configuración del servicio en Render
-```
 
 ## La planilla
 
@@ -102,10 +113,3 @@ El plan gratuito de Render alcanza, con una salvedad: duerme el servicio despué
 de 15 minutos sin visitas, y la primera carga después de la siesta tarda cerca de
 un minuto. El plan Starter (7 USD por mes) lo mantiene despierto. Google Drive y
 Sheets no cobran por esto.
-
-## Mantenimiento
-
-- **Cambiar la web**: editar `public/`, `git push`, y Render publica solo.
-- **Agregar un usuario**: correr `npm run clave` de nuevo y actualizar la
-  variable `USUARIOS` con todos los objetos en el mismo arreglo.
-- **Ver errores**: pestaña *Logs* del servicio en Render.

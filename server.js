@@ -10,9 +10,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Readable } from "node:stream";
 
-import * as Auth from "./src/auth.js";
-import * as D from "./src/datos.js";
-import * as G from "./src/google.js";
+import * as Auth from "./auth.js";
+import * as D from "./datos.js";
+import * as G from "./google.js";
 
 const env = process.env;
 const aqui = path.dirname(fileURLToPath(import.meta.url));
@@ -31,13 +31,30 @@ const subida = multer({
 /* Render entra por HTTPS; en desarrollo local, por HTTP. */
 const esSeguro = (req) => (req.headers["x-forwarded-proto"] || req.protocol) === "https";
 
-/* ---------------------------- estáticos ---------------------------- */
-app.use(express.static(path.join(aqui, "public"), {
-  maxAge: "1h",
-  setHeaders: (res, ruta) => {
-    if (ruta.endsWith(".html")) res.setHeader("cache-control", "no-cache");
-  },
-}));
+/* ---------------------------- estáticos ----------------------------
+ * Lista explícita: todos los archivos viven en la misma carpeta que este
+ * archivo, y solo se entregan los que están acá. El código del servidor
+ * nunca se sirve.
+ */
+const ESTATICOS = {
+  "/": ["index.html", "text/html; charset=utf-8"],
+  "/index.html": ["index.html", "text/html; charset=utf-8"],
+  "/clave.html": ["clave.html", "text/html; charset=utf-8"],
+  "/legajo.js": ["legajo.js", "text/javascript; charset=utf-8"],
+  "/estilos.css": ["estilos.css", "text/css; charset=utf-8"],
+  "/marca.png": ["marca.png", "image/png"],
+  "/lockup.png": ["lockup.png", "image/png"],
+  "/datos-iniciales.json": ["datos-iniciales.json", "application/json; charset=utf-8"],
+};
+
+app.use((req, res, next) => {
+  if (req.method !== "GET") return next();
+  const e = ESTATICOS[req.path];
+  if (!e) return next();
+  res.setHeader("content-type", e[1]);
+  res.setHeader("cache-control", e[0].endsWith(".html") ? "no-cache" : "public, max-age=3600");
+  res.sendFile(path.join(aqui, e[0]));
+});
 
 /* ---------------------------- salud ---------------------------- */
 app.get("/api/salud", (req, res) => {
@@ -271,7 +288,7 @@ app.post("/api/importar", async (req, res, next) => {
 
 /* ---------------------------- cierre ---------------------------- */
 app.use("/api", (req, res) => res.status(404).json({ error: "Ruta no encontrada: " + req.path }));
-app.get("*", (req, res) => res.sendFile(path.join(aqui, "public", "index.html")));
+app.get("*", (req, res) => res.sendFile(path.join(aqui, "index.html")));
 
 app.use((e, req, res, next) => {
   console.error(e);

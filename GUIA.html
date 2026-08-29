@@ -123,23 +123,29 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--border);color
 <section class="paso" data-n="1">
   <h2>Subir el proyecto a GitHub</h2>
   <div class="donde">github.com</div>
-  <p>Descomprimí <code>legajo-pinos-grandis.zip</code> — clic derecho sobre el archivo, <b>Extraer todo</b>. Adentro hay
-  una carpeta llamada <code>legajo-pinos-grandis</code>: esa es la que tiene el proyecto.</p>
+  <p>Descomprimí <code>legajo-pinos-grandis.zip</code>: clic derecho sobre el archivo, <b>Extraer todo</b>,
+  <b>Extraer</b>. Adentro vas a ver una carpeta con <b>18 archivos sueltos</b> — no hay subcarpetas, y eso es a
+  propósito: así no se puede perder nada al subir.</p>
   <ol>
     <li>Entrá a <a href="https://github.com/new" target="_blank" rel="noopener">github.com/new</a>.</li>
     <li>Nombre del repositorio: <code>legajo-pinos-grandis</code>. Marcá <b>Private</b>. No toques ninguna de las
       casillas de abajo (README, .gitignore, licencia).</li>
     <li><b>Create repository</b>.</li>
     <li>En la página que aparece, tocá el link <b>uploading an existing file</b>.</li>
-    <li>Abrí la carpeta <code>legajo-pinos-grandis</code> en el Explorador, seleccioná <b>todo</b> lo que hay adentro
-      (Ctrl+E para el Explorador, Ctrl+A para seleccionar) y arrastralo a la ventana de GitHub.</li>
-    <li>Abajo, botón verde <b>Commit changes</b>. Listo.</li>
+    <li>Abrí la carpeta que extrajiste, seleccioná todos los archivos con <b>Ctrl+A</b> y arrastralos a la ventana
+      de GitHub. Esperá a que termine de subirlos todos.</li>
+    <li>Abajo, botón verde <b>Commit changes</b>.</li>
   </ol>
   <div class="aviso ojo">
-    <b>Ojo con la carpeta de más.</b> Lo que hay que arrastrar es el <i>contenido</i> de <code>legajo-pinos-grandis</code>
-    — los archivos <code>server.js</code>, <code>package.json</code>, <code>render.yaml</code> y las carpetas
-    <code>src</code>, <code>public</code> y <code>scripts</code> — no la carpeta entera. Si en el repositorio ves
-    una sola carpeta <code>legajo-pinos-grandis</code>, Render no va a encontrar nada: borrala y subí de nuevo el contenido.
+    <b>Antes de seguir, contá los archivos en GitHub.</b> Tienen que estar los 18 — dos empiezan con punto, <code>.gitignore</code> y <code>.env.ejemplo</code> — y entre ellos
+    <code>server.js</code>, <code>auth.js</code>, <code>google.js</code>, <code>datos.js</code>,
+    <code>index.html</code>, <code>legajo.js</code> y <code>package.json</code>. Si falta alguno, tocá
+    <b>Add file → Upload files</b> y subí los que falten: al arrastrar de a muchos, el navegador a veces deja
+    alguno afuera sin avisar.
+  </div>
+  <div class="aviso ojo">
+    <b>Extraé el zip antes de arrastrar.</b> Windows te deja mirar adentro del zip como si fuera una carpeta común,
+    pero si arrastrás desde ahí los archivos llegan incompletos o vacíos.
   </div>
 </section>
 
@@ -331,7 +337,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--border);color
 <tr><td>«Google no devolvió el token permanente»</td><td>Ya habías autorizado antes con esa cuenta. Quitá el permiso en <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a> y volvé a conectar.</td></tr>
 <tr><td>«No se pudo renovar el acceso a Google»</td><td>La app quedó en modo Prueba y el token venció a los 7 días. Publicala (paso 5) y volvé a conectar (paso 7).</td></tr>
 <tr><td>«Usuario o contraseña incorrectos» con la clave buena</td><td>La variable <code>USUARIOS</code> quedó mal pegada — suele ser un salto de línea de más. Tiene que ir en un solo renglón, con corchetes.</td></tr>
-<tr><td>Render dice que no encuentra <code>package.json</code></td><td>Subiste la carpeta <code>legajo-pinos-grandis</code> en vez de su contenido. Mirá la advertencia del paso 1.</td></tr>
+<tr><td><code>Cannot find module</code> en los logs de Render</td><td>Falta un archivo en GitHub. El nombre que aparece en el error es el que no se subió: buscalo en la carpeta que extrajiste y subilo con <b>Add file → Upload files</b>. Render republica solo.</td></tr>\n<tr><td>Render dice que no encuentra <code>package.json</code></td><td>Lo mismo: no llegó ese archivo. Subilo y listo.</td></tr>
 <tr><td>La primera carga del día tarda un minuto</td><td>Es el plan Free de Render, que duerme el servicio. Está explicado en el paso 9.</td></tr>
 <tr><td>Cualquier otra cosa</td><td>Pestaña <b>Logs</b> del servicio en Render: muestra los errores en vivo mientras usás la página. También podés abrir <code>TU-SITIO/api/salud</code>, que dice si falta alguna variable.</td></tr>
 </tbody>
@@ -341,7 +347,7 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--border);color
 <h3 style="font-size:19px;margin:34px 0 4px">Tareas de siempre</h3>
 <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:6px 18px;box-shadow:var(--shadow)">
   <div class="campo"><b>Agregar un usuario</b><span>Abrí <code>/clave.html</code>, cargá <b>a todos</b> los usuarios juntos (los viejos y el nuevo), generá y reemplazá la variable <code>USUARIOS</code> en Render.</span></div>
-  <div class="campo"><b>Cambiar algo de la web</b><span>Subí el archivo corregido a GitHub. Render republica solo en un par de minutos.</span></div>
+  <div class="campo"><b>Cambiar algo de la web</b><span>Subí el archivo corregido a GitHub con <b>Add file → Upload files</b>, con el mismo nombre. Render republica solo en un par de minutos.</span></div>
   <div class="campo"><b>Ver qué está pasando</b><span>Pestaña <b>Logs</b> del servicio en Render.</span></div>
   <div class="campo"><b>Dar de baja a alguien</b><span>Desde la ficha, en <b>Editar</b>, poné Estado en <i>Baja</i>. No se borra nada: la persona y sus documentos quedan.</span></div>
 </div>
