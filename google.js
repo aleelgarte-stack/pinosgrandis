@@ -35,15 +35,27 @@ export async function token(env) {
   return cacheToken.valor;
 }
 
+/* Traduce la respuesta de error de Google a algo legible. A veces devuelve
+ * una página HTML entera, que no sirve de nada mostrarla. */
+export function mensajeDeError(estado, texto) {
+  try {
+    const j = JSON.parse(texto);
+    const m = (j.error && (j.error.message || j.error)) || null;
+    if (m) return "Google respondió " + estado + ": " + (typeof m === "string" ? m : JSON.stringify(m));
+  } catch (e) { /* no era JSON */ }
+  if (/^\s*</.test(texto)) {
+    return "Google devolvió un error " + estado + " sin explicación (una página en vez de una respuesta). " +
+           "Suele ser momentáneo: esperá un momento y probá de nuevo.";
+  }
+  return "Google respondió " + estado + ": " + String(texto).slice(0, 300);
+}
+
 async function api(env, url, opciones = {}) {
   const t = await token(env);
   const h = new Headers(opciones.headers || {});
   h.set("authorization", "Bearer " + t);
   const r = await fetch(url, { ...opciones, headers: h });
-  if (!r.ok) {
-    const txt = await r.text();
-    throw new Error("Google respondió " + r.status + ": " + txt.slice(0, 400));
-  }
+  if (!r.ok) throw new Error(mensajeDeError(r.status, await r.text()));
   return r;
 }
 async function json(env, url, opciones) {
@@ -79,31 +91,40 @@ export async function renombrar(env, id, nombre) {
   });
 }
 
+/* Subida en dos pasos (la que Google recomienda): primero se anuncia el
+ * archivo y Google devuelve una dirección temporal; después se mandan los
+ * bytes ahí. Es más robusto que armar un cuerpo multipart a mano y no tiene
+ * problemas con archivos grandes ni con nombres con acentos. */
 export async function subirArchivo(env, { nombre, mime, datos, carpeta }) {
-  const limite = "----legajo" + Math.random().toString(36).slice(2);
-  const meta = JSON.stringify({ name: nombre, parents: [carpeta] });
+  const t = await token(env);
+  const bytes = datos instanceof Uint8Array ? datos : new Uint8Array(datos);
+  const tipo = mime || "application/octet-stream";
 
-  const cabecera =
-    "--" + limite + "\r\n" +
-    "Content-Type: application/json; charset=UTF-8\r\n\r\n" + meta + "\r\n" +
-    "--" + limite + "\r\n" +
-    "Content-Type: " + (mime || "application/octet-stream") + "\r\n\r\n";
-  const pie = "\r\n--" + limite + "--\r\n";
-
-  const enc = new TextEncoder();
-  const a = enc.encode(cabecera), b = new Uint8Array(datos), c = enc.encode(pie);
-  const cuerpo = new Uint8Array(a.length + b.length + c.length);
-  cuerpo.set(a, 0); cuerpo.set(b, a.length); cuerpo.set(c, a.length + b.length);
-
-  return json(
-    env,
-    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,size,mimeType",
+  const inicio = await fetch(
+    "https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,webViewLink,size,mimeType",
     {
       method: "POST",
-      headers: { "content-type": "multipart/related; boundary=" + limite },
-      body: cuerpo,
+      headers: {
+        authorization: "Bearer " + t,
+        "content-type": "application/json; charset=UTF-8",
+        "x-upload-content-type": tipo,
+        "x-upload-content-length": String(bytes.length),
+      },
+      body: JSON.stringify({ name: nombre, parents: [carpeta] }),
     }
   );
+  if (!inicio.ok) throw new Error(mensajeDeError(inicio.status, await inicio.text()));
+
+  const destino = inicio.headers.get("location");
+  if (!destino) throw new Error("Google no indicó dónde subir el archivo. Probá de nuevo.");
+
+  const r = await fetch(destino, {
+    method: "PUT",
+    headers: { authorization: "Bearer " + t, "content-type": tipo },
+    body: bytes,
+  });
+  if (!r.ok) throw new Error(mensajeDeError(r.status, await r.text()));
+  return r.json();
 }
 
 export async function descargarArchivo(env, id) {
