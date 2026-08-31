@@ -159,9 +159,11 @@ export async function escribirRango(env, planillaId, rango, filas) {
   });
 }
 
+/* Agrega una fila al final de la hoja. La dirección lleva ":append": sin eso
+ * Google no reconoce la operación y responde con una página de error. */
 export async function agregarFila(env, planillaId, hoja, fila) {
   const u = "https://sheets.googleapis.com/v4/spreadsheets/" + planillaId +
-    "/values/" + encodeURIComponent(hoja + "!A1") +
+    "/values/" + encodeURIComponent(hoja + "!A1") + ":append" +
     "?valueInputOption=RAW&insertDataOption=INSERT_ROWS";
   return json(env, u, {
     method: "POST",
