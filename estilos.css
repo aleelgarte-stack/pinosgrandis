@@ -336,6 +336,11 @@ tbody tr.clickable:hover{background:var(--surface-2)}
   .main{padding:20px 16px 50px}
 }
 
+/* Marca de solo consulta en la barra lateral. */
+body.solo-lectura .userchip{border:1px solid var(--warn-bg);background:var(--warn-bg)}
+body.solo-lectura #userRol{color:var(--warn);font-weight:600}
+body.solo-lectura .avatar{background:var(--muted)}
+
 /* ============================ móvil ============================
    El menú lateral se descompone: la marca queda arriba, fija, y la
    navegación pasa a una barra inferior al alcance del pulgar. Las tablas

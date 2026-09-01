@@ -141,7 +141,7 @@ app.get("/api/salud", (req, res) => {
     .filter((k) => !env[k]);
   let usuarios;
   try {
-    usuarios = Auth.usuariosDe(env).map((u) => u.usuario);
+    usuarios = Auth.usuariosDe(env).map((u) => u.usuario + " (" + u.rol + ")");
   } catch (e) {
     usuarios = "La variable USUARIOS está mal escrita: tiene que ser el texto completo que da /clave.html, en un solo renglón.";
   }
@@ -183,7 +183,7 @@ app.post("/api/login", async (req, res, next) => {
       return res.status(401).json({ error: 'La contraseña no coincide para "' + u.usuario + '".' });
     }
 
-    const s = { usuario: u.usuario, nombre: u.nombre || u.usuario };
+    const s = { usuario: u.usuario, nombre: u.nombre || u.usuario, rol: u.rol };
     res.setHeader("set-cookie", await Auth.cookieSesion(env, s, esSeguro(req)));
     res.json({ sesion: s });
   } catch (e) { next(e); }
@@ -205,6 +205,16 @@ app.use("/api", async (req, res, next) => {
 });
 
 app.get("/api/sesion", (req, res) => res.json({ sesion: req.sesion }));
+
+/* Los usuarios de solo lectura pueden mirar todo, pero no cambiar nada.
+ * Alcanza con bloquear lo que no sea una consulta. */
+app.use("/api", (req, res, next) => {
+  if (req.method === "GET" || req.sesion.rol === "admin") return next();
+  res.status(403).json({
+    error: "Tu usuario es de solo consulta: podés ver todo, pero no modificarlo.",
+    codigo: "SOLO_LECTURA",
+  });
+});
 
 /* ------------------- conexión con Google desde la web -------------------
  * Evita tener que usar la terminal: se entra al sistema, se toca el botón
@@ -371,28 +381,6 @@ app.get("/api/documentos/:id/archivo", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-/* ---------------------------- EPP ---------------------------- */
-app.post("/api/personas/:id/epp", async (req, res, next) => {
-  try {
-    const id = await D.guardarEpp(env, req.params.id, req.body);
-    res.json({ ok: true, id });
-  } catch (e) { next(e); }
-});
-
-app.put("/api/epp/:id", async (req, res, next) => {
-  try {
-    await D.actualizarEpp(env, req.params.id, req.body);
-    res.json({ ok: true });
-  } catch (e) { next(e); }
-});
-
-app.delete("/api/epp/:id", async (req, res, next) => {
-  try {
-    await D.borrarEpp(env, req.params.id);
-    res.json({ ok: true });
-  } catch (e) { next(e); }
-});
-
 /* ---------------------- importación inicial ---------------------- */
 app.post("/api/importar", async (req, res, next) => {
   try {
@@ -427,7 +415,7 @@ function limpiar(p) {
     pa: { ...p.pa, archivo: doc(p.pa.archivo) },
     bps: { ...p.bps, archivo: doc(p.bps.archivo) },
     archivos: p.archivos.map(doc),
-    epp: p.epp.map((e) => ({ ...e, _fila: undefined })),
+    epp: p.epp.map(doc),
   };
 }
 

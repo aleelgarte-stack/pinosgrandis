@@ -61,6 +61,15 @@ function estadoDoc(o){
   if(d<=60) return {k:"soon",txt:"Vence en "+d+" días",corto:d+" d",cls:"soon"};
   return {k:"ok",txt:"Vigente hasta "+fmt(o.vto),corto:mesAnio(o.vto),cls:"ok"};
 }
+/* Primeros auxilios no vence: interesa si lo hizo o no. */
+function estadoHecho(o){
+  if(!o) return {k:"none",txt:"Sin registro",corto:"No",cls:"none"};
+  if(o.na) return {k:"none",txt:"No aplica",corto:"N/A",cls:"none"};
+  if(o.vto) return {k:"ok",txt:"Realizado el "+fmt(o.vto),corto:"Hecho",cls:"ok"};
+  return {k:"none",txt:"Sin registro",corto:"No",cls:"none"};
+}
+function estadoDe(d,p){ return d.sinVencimiento?estadoHecho(p[d.k]):estadoDoc(p[d.k]); }
+
 function estadoBps(p){
   if(p.bps&&p.bps.tiene) return {k:"ok",txt:"Presentada",corto:"Sí",cls:"ok"};
   return {k:"none",txt:"Pendiente de cargar",corto:"Pendiente",cls:"soon"};
@@ -74,12 +83,13 @@ var DOCS=[
   {k:"moto",n:"Carné de motosierrista",corto:"Motosierrista"},
   {k:"libH",n:"Libreta de conducir · categoría H",corto:"Libreta H"},
   {k:"libA",n:"Libreta de conducir · categoría A",corto:"Libreta A"},
-  {k:"pa",n:"Primeros auxilios",corto:"1ros auxilios"}
+  {k:"pa",n:"Primeros auxilios",corto:"1ros aux.",sinVencimiento:true}
 ];
+/* Los que sí vencen y entran en el semáforo y en los contadores. */
+var DOCS_VENCEN=DOCS.filter(function(d){ return !d.sinVencimiento; });
 var TITULOS={}; DOCS.forEach(function(d){ TITULOS[d.k]=d.n; }); TITULOS.bps="Constancia de alta en BPS";
 var CATEGORIAS=["Maquinista especializado","Maquinista ll","Peón Común","Obrero","Titular"];
 var FUNCIONES=["Maquinista","Motosierrista","Peón","Dirección","Chofer","Vivero","Administración"];
-var EPP_TIPOS=["Casco forestal con protector facial y auditivo","Pantalón anticorte","Polainas anticorte","Botas con puntera de acero","Guantes anticorte","Chaleco reflectivo","Antiparras","Protector auditivo","Campera impermeable"];
 
 var DB={personas:[],planillaUrl:"",carpetaUrl:""};
 var sesion=null;
@@ -93,26 +103,20 @@ function nuevaPersona(){
     bps:{tiene:false,numero:"",fecha:"",archivo:null},
     epp:[],archivos:[]};
 }
-function docsDe(p){ return DOCS.map(function(d){ return {k:d.k,n:d.n,corto:d.corto,o:p[d.k]||{},e:estadoDoc(p[d.k])}; }); }
-function peorDe(p){ var peor="ok"; docsDe(p).forEach(function(x){ if(x.e.k!=="none"&&PESO[x.e.k]<PESO[peor]) peor=x.e.k; }); return peor; }
-function eppPendientes(p){
-  var n=0;
-  (p.epp||[]).forEach(function(x){
-    if(!x.entregado) n++;
-    else if(!x.repuesto){ var d=dias(x.fechaReposicion); if(d!==null&&d<=0) n++; }
-  });
-  return n;
-}
+function docsDe(p){ return DOCS.map(function(d){ return {k:d.k,n:d.n,corto:d.corto,sinVencimiento:d.sinVencimiento,o:p[d.k]||{},e:estadoDe(d,p)}; }); }
+function peorDe(p){ var peor="ok"; docsDe(p).forEach(function(x){ if(!x.sinVencimiento&&x.e.k!=="none"&&PESO[x.e.k]<PESO[peor]) peor=x.e.k; }); return peor; }
+function eppArchivos(p){ return (p.epp||[]).length; }
 function totales(){
   var t={activos:0,vencidos:0,proximos:0,epp:0,bps:0};
   DB.personas.forEach(function(p){
     if(p.estado!=="Activo") return;
     t.activos++;
     docsDe(p).forEach(function(x){
+      if(x.sinVencimiento) return;
       if(x.e.k==="bad") t.vencidos++;
       else if(x.e.k==="near"||x.e.k==="soon") t.proximos++;
     });
-    t.epp+=eppPendientes(p);
+    if(!(p.epp||[]).length) t.epp++;
     if(!p.bps.tiene) t.bps++;
   });
   return t;
@@ -121,11 +125,14 @@ function valoresDe(campo){
   var m={}; DB.personas.forEach(function(p){ if(p[campo]) m[p[campo]]=1; });
   return Object.keys(m).sort();
 }
+function archivosDe(p,k){ return (p[k]&&p[k].archivos)||[]; }
 function totalArchivos(p){
-  var n=(p.archivos||[]).length;
-  DOCS.concat([{k:"bps"}]).forEach(function(d){ if(p[d.k]&&p[d.k].archivo) n++; });
+  var n=(p.archivos||[]).length+(p.epp||[]).length;
+  DOCS.concat([{k:"bps"}]).forEach(function(d){ n+=archivosDe(p,d.k).length; });
   return n;
 }
+/* Cuántos archivos admite cada documento; tiene que coincidir con el servidor. */
+var MAX_ARCHIVOS={salud:2,moto:1,libH:1,libA:1,pa:1,bps:1};
 function urlArchivo(a){ return "/api/documentos/"+encodeURIComponent(a.id)+"/archivo"; }
 function esImagen(a){ return a&&a.mime&&a.mime.indexOf("image/")===0; }
 function esPdf(a){ return a&&a.mime==="application/pdf"; }
@@ -148,10 +155,14 @@ async function cargar(){
   ponerUsuario(sesion);
 }
 
+function puedeEditar(){ return !sesion||sesion.rol!=="lectura"; }
 function ponerUsuario(s){
   sesion=s||sesion;
   document.getElementById("userNom").textContent=sesion?sesion.nombre:"—";
   document.getElementById("userIni").textContent=iniciales(sesion?sesion.nombre:"");
+  var r=document.getElementById("userRol");
+  if(r) r.textContent=puedeEditar()?"Sesión iniciada":"Solo consulta";
+  document.body.classList.toggle("solo-lectura",!puedeEditar());
 }
 
 /* ---------------- navegación ---------------- */
@@ -174,7 +185,7 @@ function statsHTML(){
     stat("Vencidos",t.vencidos,"requieren acción hoy","var(--crit)")+
     stat("Por vencer (60 días)",t.proximos,"agendar renovación","var(--alert)")+
     stat("Altas BPS",t.bps,"pendientes de cargar","var(--warn)")+
-    stat("EPP",t.epp,"entrega o reposición","var(--ok)")+
+    stat("EPP",t.epp,"sin comprobante","var(--warn)")+
   '</div>';
 }
 function legend(){
@@ -248,7 +259,9 @@ function pantallaConfig(){
 
 function vPersonal(){
   if(!DB.personas.length&&!filtro&&!fEmpresa&&!fServicio&&!fFuncion){
-    return head("Personal","Legajo del personal. Cada ficha tiene su carpeta de documentos en Drive.")+panelImportar();
+    return head("Personal","Legajo del personal. Cada ficha tiene su carpeta de documentos en Drive.")+
+      (puedeEditar()?panelImportar()
+        :'<div class="banner info"><div>La planilla está vacía. Un administrador tiene que cargar el personal.</div></div>');
   }
   var rows=filtrados().map(function(p){
     var byK={}; docsDe(p).forEach(function(x){ byK[x.k]=x.e; });
@@ -261,10 +274,10 @@ function vPersonal(){
       '<td data-et="Libreta H">'+chipMini(byK.libH)+'</td><td data-et="Libreta A">'+chipMini(byK.libA)+'</td>'+
       '<td data-et="1ros aux.">'+chipMini(byK.pa)+'</td>'+
       '<td data-et="Alta BPS">'+chipMini(estadoBps(p))+'</td>'+
-      '<td data-et="EPP">'+(eppPendientes(p)?'<span class="chip near"><span class="dot"></span>'+eppPendientes(p)+'</span>':'<span class="chip ok"><span class="dot"></span>Al día</span>')+'</td></tr>';
+      '<td data-et="EPP">'+(eppArchivos(p)?'<span class="chip ok"><span class="dot"></span>'+eppArchivos(p)+'</span>':'<span class="chip none"><span class="dot"></span>Sin archivos</span>')+'</td></tr>';
   }).join("");
   return head("Personal","Legajo del personal. Cada ficha tiene su carpeta de documentos en Drive.",
-      '<button class="btn btn-primary" id="nuevo">+ Nueva ficha</button>')+
+      puedeEditar()?'<button class="btn btn-primary" id="nuevo">+ Nueva ficha</button>':"")+
     statsHTML()+
     '<div class="toolbar">'+
       '<input type="text" id="q" placeholder="Buscar por nombre, documento, categoría…" value="'+esc(filtro)+'">'+
@@ -284,7 +297,10 @@ function vVencimientos(){
   var items=[];
   DB.personas.forEach(function(p){
     if(p.estado!=="Activo") return;
-    docsDe(p).forEach(function(x){ if(x.e.k!=="none"&&x.e.k!=="ok") items.push({p:p,n:x.n,e:x.e,f:x.o.vto}); });
+    docsDe(p).forEach(function(x){
+      if(x.sinVencimiento) return;
+      if(x.e.k!=="none"&&x.e.k!=="ok") items.push({p:p,n:x.n,e:x.e,f:x.o.vto});
+    });
   });
   items.sort(function(a,b){ return PESO[a.e.k]-PESO[b.e.k]||((dias(a.f)||0)-(dias(b.f)||0)); });
   var rows=items.map(function(i){
@@ -302,33 +318,28 @@ function vVencimientos(){
     '</tbody></table></div></div>'+legend();
 }
 
-function estadoEpp(x){
-  if(!x.entregado) return {k:"near",txt:"Sin entregar",cls:"near"};
-  if(x.repuesto) return {k:"ok",txt:"Repuesto",cls:"ok"};
-  var d=dias(x.fechaReposicion);
-  if(d===null) return {k:"ok",txt:"Entregado",cls:"ok"};
-  if(d<0) return {k:"bad",txt:"Reposición vencida",cls:"bad"};
-  if(d<=30) return {k:"near",txt:"Reponer en "+d+" d",cls:"near"};
-  if(d<=60) return {k:"soon",txt:"Reponer en "+d+" d",cls:"soon"};
-  return {k:"ok",txt:"Entregado",cls:"ok"};
-}
 function vEpp(){
-  var rows=[];
-  DB.personas.forEach(function(p){ (p.epp||[]).forEach(function(x){ rows.push({p:p,x:x,e:estadoEpp(x)}); }); });
-  rows.sort(function(a,b){ return PESO[a.e.k]-PESO[b.e.k]; });
-  var html=rows.map(function(r){
-    return '<tr class="clickable" data-open="'+r.p.id+'">'+
-      '<td><div class="person"><span class="stripe" style="background:'+COLOR[r.e.k]+'"></span>'+
-        '<div><b>'+esc(titulo(r.p.nombre))+'</b><small>'+esc(r.p.documento)+'</small></div></div></td>'+
-      '<td data-et="Equipo"><span>'+esc(r.x.equipo)+(r.x.detalle?'<br><span style="color:var(--muted);font-size:11.5px">'+esc(r.x.detalle)+'</span>':'')+'</span></td>'+
-      '<td class="num" data-et="Entrega">'+fmt(r.x.fechaEntrega)+'</td>'+
-      '<td data-et="Entregado">'+(r.x.entregado?'<span class="chip ok"><span class="dot"></span>Sí</span>':'<span class="chip none"><span class="dot"></span>No</span>')+'</td>'+
-      '<td class="num" data-et="Reposición">'+fmt(r.x.fechaReposicion)+'</td><td data-et="Estado">'+chip(r.e)+'</td></tr>';
+  var filas=filtrados().map(function(p){
+    var n=eppArchivos(p);
+    return '<tr class="clickable" data-open="'+p.id+'">'+
+      '<td><div class="person"><span class="stripe" style="background:'+(n?"var(--ok)":"var(--muted)")+'"></span>'+
+        '<div><b>'+esc(titulo(p.nombre))+'</b><small>'+esc(p.documento)+'</small></div></div></td>'+
+      '<td data-et="Servicio"><span>'+esc(p.servicio||"—")+'</span></td>'+
+      '<td data-et="Función"><span>'+esc(p.funcion||"—")+'</span></td>'+
+      '<td data-et="Comprobantes">'+(n
+        ?'<span class="chip ok"><span class="dot"></span>'+n+' archivo'+(n>1?"s":"")+'</span>'
+        :'<span class="chip none"><span class="dot"></span>Sin archivos</span>')+'</td>'+
+      '<td data-et="Último">'+(n?fmt(p.epp[n-1].fecha):"—")+'</td></tr>';
   }).join("");
-  return head("Entregas de EPP","Equipo de protección personal entregado a cada trabajador, con su fecha de reposición.")+
-    '<div class="card"><div class="tablewrap"><table><thead><tr><th>Persona</th><th>Equipo</th><th>Fecha de entrega</th><th>Entregado</th><th>Reposición</th><th>Estado</th></tr></thead><tbody>'+
-    (html||'<tr><td colspan="6"><div class="empty">Todavía no se registraron entregas. Se cargan desde la pestaña EPP de cada ficha.</div></td></tr>')+
-    '</tbody></table></div></div>'+legend();
+  var sin=filtrados().filter(function(p){ return !eppArchivos(p); }).length;
+  return head("Entregas de EPP","Comprobantes de entrega de equipo de protección personal, uno o varios por persona.")+
+    (sin?'<div class="banner info"><div><b>'+sin+' persona'+(sin>1?"s":"")+' sin comprobante.</b> '+
+      'Se suben desde la pestaña EPP de cada ficha.</div></div>':'')+
+    '<div class="card"><div class="tablewrap"><table><thead><tr>'+
+    '<th>Persona</th><th>Servicio</th><th>Función</th><th>Comprobantes</th><th>Último</th>'+
+    '</tr></thead><tbody>'+
+    (filas||'<tr><td colspan="5"><div class="empty">No hay fichas que coincidan con el filtro.</div></td></tr>')+
+    '</tbody></table></div></div>';
 }
 
 function vDrive(){
@@ -371,7 +382,17 @@ function attHTML(a,key){
   return '<div class="att"><span class="thumb">'+thumb+'</span>'+
     '<span class="att-meta"><b>'+esc(a.nombre)+'</b><span>'+esc(fmtSize(a.tam))+' · '+fmt(a.fecha)+'</span></span>'+
     '<button class="btn btn-sm" data-ver="'+esc(a.id)+'">Ver</button>'+
-    '<button class="btn btn-sm" data-quitar="'+esc(a.id)+'">Quitar</button></div>';
+    (puedeEditar()?'<button class="btn btn-sm" data-quitar="'+esc(a.id)+'">Quitar</button>':'')+'</div>';
+}
+/* Los archivos de un documento, y la zona para agregar si todavía entra otro. */
+function adjuntos(p,k,texto){
+  var lista=archivosDe(p,k), max=MAX_ARCHIVOS[k]||0;
+  var h=lista.map(function(a){ return attHTML(a,k); }).join("");
+  if(!puedeEditar()) return h||'<div class="empty">Sin archivo.</div>';
+  if(!max||lista.length<max) h+=dropHTML(k,texto);
+  else h+='<p style="font-size:11.5px;color:var(--muted);margin:9px 0 0">'+
+    'Máximo '+max+' archivo'+(max>1?"s":"")+'. Quitá uno para subir otro.</p>';
+  return h;
 }
 function dropHTML(key,texto){
   return '<div class="dropzone" data-drop="'+esc(key)+'" tabindex="0" role="button">'+
@@ -394,7 +415,8 @@ function vFicha(){
        '</div></div>'+
      '<div class="enlaces">'+
        (p.carpetaUrl?'<a class="btn" href="'+esc(p.carpetaUrl)+'" target="_blank" rel="noopener">Carpeta en Drive</a>':'')+
-       '<button class="btn" id="editar">Editar ficha</button></div></div>'+
+       (puedeEditar()?'<button class="btn" id="editar">Editar ficha</button>':'<span class="chip flat">Solo consulta</span>')+
+       '</div></div>'+
    '<div class="tabs">'+tabBtn("datos","Datos")+tabBtn("docs","Documentación")+tabBtn("epp","EPP")+tabBtn("archivos","Archivos ("+totalArchivos(p)+")")+'</div>';
 
   if(tab==="datos"){
@@ -408,44 +430,50 @@ function vFicha(){
     '</div><div style="height:14px"></div>'+
     card("Resumen de documentación",'<div class="grid2">'+
       d.map(function(x){
+        var n=archivosDe(p,x.k).length;
+        var linea=x.o.na?"No aplica a esta función"
+          :x.sinVencimiento?(x.o.vto?"Realizado el "+fmt(x.o.vto):"Sin registro")
+          :"Vence el "+fmt(x.o.vto);
         return '<div class="doc"><div class="doc-top"><h4>'+esc(x.n)+'</h4>'+chip(x.e)+'</div>'+
-          '<div class="num" style="color:var(--muted)">'+(x.o.na?"No aplica a esta función":"Vence el "+fmt(x.o.vto))+'</div>'+
-          '<div style="margin-top:9px"><span class="tag">'+(x.o.archivo?"con archivo adjunto":"sin archivo")+'</span></div></div>';
+          '<div class="num" style="color:var(--muted)">'+linea+'</div>'+
+          '<div style="margin-top:9px"><span class="tag">'+(n?(n+" archivo"+(n>1?"s":"")):"sin archivo")+'</span></div></div>';
       }).join("")+
       '<div class="doc"><div class="doc-top"><h4>Constancia de alta en BPS</h4>'+chip(estadoBps(p))+'</div>'+
       '<div class="num" style="color:var(--muted)">'+(p.bps.tiene?"Alta del "+fmt(p.bps.fecha):"Sin cargar")+'</div>'+
-      '<div style="margin-top:9px"><span class="tag">'+(p.bps.archivo?"con archivo adjunto":"sin archivo")+'</span></div></div>'+
+      '<div style="margin-top:9px"><span class="tag">'+(archivosDe(p,"bps").length?"con archivo adjunto":"sin archivo")+'</span></div></div>'+
+      '<div class="doc"><div class="doc-top"><h4>Entrega de EPP</h4>'+
+      (eppArchivos(p)?'<span class="chip ok"><span class="dot"></span>'+eppArchivos(p)+' archivo'+(eppArchivos(p)>1?"s":"")+'</span>'
+        :'<span class="chip none"><span class="dot"></span>Sin archivos</span>')+'</div>'+
+      '<div class="num" style="color:var(--muted)">'+(eppArchivos(p)?"Último: "+fmt(p.epp[eppArchivos(p)-1].fecha):"Sin comprobantes")+'</div></div>'+
     '</div>');
   }
 
   if(tab==="docs"){
     var bloques=d.map(function(x){
-      var cuerpo=x.o.na?'<div class="empty">No aplica a esta función.</div>'
-        :'<dl class="dl">'+dt("Vence",fmt(x.o.vto))+(x.k==="pa"?dt("Dictado por",x.o.emisor):"")+'</dl>'+barra(x.o);
-      return card(x.n,cuerpo+(x.o.archivo?attHTML(x.o.archivo,x.k):dropHTML(x.k,"documento escaneado")),chip(x.e));
+      var cuerpo;
+      if(x.o.na) cuerpo='<div class="empty">No aplica a esta función.</div>';
+      else if(x.sinVencimiento)
+        cuerpo='<dl class="dl">'+dt("Realizado el",x.o.vto?fmt(x.o.vto):"—")+dt("Dictado por",x.o.emisor)+'</dl>';
+      else cuerpo='<dl class="dl">'+dt("Vence",fmt(x.o.vto))+'</dl>'+barra(x.o);
+      return card(x.n,cuerpo+adjuntos(p,x.k,"documento escaneado"),chip(x.e));
     }).join("");
     bloques+=card("Constancia de alta en BPS",
       (p.bps.tiene?'<dl class="dl">'+dt("Número",p.bps.numero)+dt("Fecha de alta",fmt(p.bps.fecha))+'</dl>'
        :'<div class="empty">Constancia pendiente de cargar.</div>')+
-      (p.bps.archivo?attHTML(p.bps.archivo,"bps"):dropHTML("bps","constancia")),chip(estadoBps(p)));
+      adjuntos(p,"bps","constancia"),chip(estadoBps(p)));
     h+='<div class="grid2">'+bloques+'</div>'+
-      '<p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">Cada archivo que adjuntes acá se sube a la carpeta de la persona en Drive.</p>';
+      (puedeEditar()?'<p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">Cada archivo que adjuntes acá se sube a la carpeta de la persona en Drive.</p>':"");
   }
 
   if(tab==="epp"){
-    var filas=(p.epp||[]).map(function(x){
-      var e=estadoEpp(x);
-      return '<tr><td data-et="Equipo"><span class="stripe" style="background:'+COLOR[e.k]+'"></span>'+esc(x.equipo)+
-        (x.detalle?'<br><span style="color:var(--muted);font-size:11.5px">'+esc(x.detalle)+'</span>':'')+'</td>'+
-        '<td><label class="check" style="padding:0"><input type="checkbox" data-epp="'+x.id+'" data-f="entregado"'+(x.entregado?" checked":"")+'> Entregado</label></td>'+
-        '<td class="num" data-et="Entrega">'+fmt(x.fechaEntrega)+'</td><td class="num" data-et="Reposición">'+fmt(x.fechaReposicion)+'</td>'+
-        '<td><label class="check" style="padding:0"><input type="checkbox" data-epp="'+x.id+'" data-f="repuesto"'+(x.repuesto?" checked":"")+'> Repuesto</label></td>'+
-        '<td data-et="Estado">'+chip(e)+'</td><td><button class="btn btn-sm" data-delepp="'+x.id+'">Quitar</button></td></tr>';
-    }).join("");
-    h+=card("Entregas registradas",
-      '<div class="tablewrap"><table><thead><tr><th>Equipo</th><th>Entrega</th><th>Fecha de entrega</th><th>Reposición prevista</th><th>Reposición</th><th>Estado</th><th></th></tr></thead><tbody>'+
-      (filas||'<tr><td colspan="7"><div class="empty">Sin entregas registradas.</div></td></tr>')+'</tbody></table></div>',
-      '<button class="btn btn-primary btn-sm" id="addEpp">+ Registrar entrega</button>');
+    var lista=(p.epp||[]).map(function(f){ return attHTML(f,"epp"); }).join("");
+    h+=card("Entrega de equipo de protección personal",
+      (lista||'<div class="empty">Todavía no hay comprobantes cargados.</div>')+
+      (puedeEditar()?dropHTML("epp","comprobante de entrega"):""),
+      (eppArchivos(p)?'<span class="chip ok"><span class="dot"></span>'+eppArchivos(p)+' archivo'+(eppArchivos(p)>1?"s":"")+'</span>'
+        :'<span class="chip none"><span class="dot"></span>Sin archivos</span>'))+
+      (puedeEditar()?'<p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">Subí acá la planilla de entrega firmada, en PDF o foto. '+
+      'Se pueden cargar varias y quedan en la carpeta de la persona en Drive.</p>':"");
   }
 
   if(tab==="archivos"){
@@ -456,13 +484,13 @@ function vFicha(){
         '<div style="font-size:11.5px;color:var(--muted)">'+esc(tipo)+' · '+fmt(f.fecha)+' · '+esc(fmtSize(f.tam))+'</div></div>'+
         (fijo?'<span class="tag">desde documentación</span>':'')+
         '<button class="btn btn-sm" data-ver="'+esc(f.id)+'">Ver</button>'+
-        '<button class="btn btn-sm" data-quitar="'+esc(f.id)+'">Quitar</button></div>';
+        (puedeEditar()?'<button class="btn btn-sm" data-quitar="'+esc(f.id)+'">Quitar</button>':'')+'</div>';
     }
     var files="";
     DOCS.concat([{k:"bps",n:"Constancia de alta BPS"}]).forEach(function(dd){
-      var a=p[dd.k]&&p[dd.k].archivo;
-      if(a) files+=fila(a,dd.n||TITULOS[dd.k],true);
+      archivosDe(p,dd.k).forEach(function(a){ files+=fila(a,dd.n||TITULOS[dd.k],true); });
     });
+    (p.epp||[]).forEach(function(a){ files+=fila(a,"Entrega de EPP",true); });
     files+=(p.archivos||[]).map(function(f){ return fila(f,f.tipoEtiqueta||"Otros",false); }).join("");
     h+='<div class="card" style="margin-bottom:14px"><div class="card-body">'+
         '<div class="drive"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>'+
@@ -470,7 +498,7 @@ function vFicha(){
         (p.carpetaUrl?'<a class="btn btn-sm" style="margin-left:auto" href="'+esc(p.carpetaUrl)+'" target="_blank" rel="noopener">Abrir en Drive</a>':'')+
         '</div></div></div>'+
       card("Documentos anexos",(files||'<div class="empty">Todavía no hay documentos en la carpeta.</div>'),
-        '<button class="btn btn-primary btn-sm" id="addFile">+ Anexar documento</button>');
+        puedeEditar()?'<button class="btn btn-primary btn-sm" id="addFile">+ Anexar documento</button>':"");
   }
   return h;
 }
@@ -538,7 +566,7 @@ function formPersona(p){
   DOCS.forEach(function(dd){
     var o=p[dd.k]||{};
     h+='<div class="section-title">'+esc(dd.n)+'</div>'+
-      inp("f_"+dd.k,"Vencimiento",o.vto,"date")+
+      inp("f_"+dd.k,dd.sinVencimiento?"Fecha en que lo hizo":"Vencimiento",o.vto,"date")+
       chk("f_"+dd.k+"_na","No aplica a esta persona",o.na);
     if(dd.k==="pa") h+='<div class="full">'+inp("f_pa_em","Dictado por",o.emisor)+'</div>';
   });
@@ -584,26 +612,10 @@ function abrirEditar(){
     return true;
   });
 }
-function abrirEpp(){
-  var p=actual(); if(!p) return;
-  var body='<div class="field full"><label for="e_eq">Equipo entregado</label><select id="e_eq">'+
-      EPP_TIPOS.map(function(o){return '<option>'+esc(o)+'</option>';}).join("")+'<option>Otro</option></select></div>'+
-    '<div class="field full"><label for="e_det">Detalle <span class="hint">talle, marca, observaciones</span></label><input id="e_det" type="text" placeholder="Talle 42 · clase 1"></div>'+
-    inp("e_fecha","Fecha de entrega",hoyISO(),"date")+
-    inp("e_rep","Fecha de reposición prevista",addDays(365),"date")+
-    chk("e_check","Entregado y firmado por el trabajador",true);
-  modal("Registrar entrega de EPP",body,"Registrar",async function(){
-    await api("personas/"+encodeURIComponent(p.id)+"/epp",{method:"POST",headers:{"content-type":"application/json"},
-      body:JSON.stringify({equipo:v("e_eq"),detalle:v("e_det"),fechaEntrega:v("e_fecha"),
-        entregado:c("e_check"),fechaReposicion:v("e_rep"),repuesto:false})});
-    await cargar(); render(); toast("Entrega registrada.");
-    return true;
-  });
-}
 function abrirFile(){
   var p=actual(); if(!p) return;
   var pend=null;
-  var body=selF("a_tipo","Tipo de documento",["Documento de identidad","Contrato","Constancia BPS","Certificado de capacitación","Entrega de EPP","Recibo de sueldo","Otros"],"Otros")+
+  var body=selF("a_tipo","Tipo de documento",["Documento de identidad","Contrato","Constancia BPS","Certificado de capacitación","Recibo de sueldo","Otros"],"Otros")+
     inp("a_fecha","Fecha del documento",hoyISO(),"date")+
     '<div class="full" id="a_zona">'+dropHTML("nuevo","archivo PDF o imagen")+'</div>';
   modal("Anexar documento",body,"Subir a Drive",async function(){
@@ -656,7 +668,10 @@ async function subir(personaId,tipo,etiqueta,fecha,archivo){
 }
 function buscarDoc(p,id){
   var todos=[];
-  DOCS.concat([{k:"bps"}]).forEach(function(d){ if(p[d.k]&&p[d.k].archivo) todos.push({a:p[d.k].archivo,t:TITULOS[d.k]}); });
+  DOCS.concat([{k:"bps"}]).forEach(function(d){
+    archivosDe(p,d.k).forEach(function(a){ todos.push({a:a,t:TITULOS[d.k]}); });
+  });
+  (p.epp||[]).forEach(function(a){ todos.push({a:a,t:"Entrega de EPP"}); });
   (p.archivos||[]).forEach(function(f){ todos.push({a:f,t:f.tipoEtiqueta||"Documento"}); });
   return todos.find(function(x){ return x.a.id===id; })||null;
 }
@@ -695,7 +710,6 @@ function wire(){
   var ib=document.getElementById("importar"); if(ib) ib.addEventListener("click",function(){ importarInicial(ib); });
   var ed=document.getElementById("editar"); if(ed) ed.addEventListener("click",abrirEditar);
   var vb=document.getElementById("volver"); if(vb) vb.addEventListener("click",function(){ go("personal"); });
-  var ae=document.getElementById("addEpp"); if(ae) ae.addEventListener("click",abrirEpp);
   var af=document.getElementById("addFile"); if(af) af.addEventListener("click",abrirFile);
 
   m.querySelectorAll("[data-drop]").forEach(function(z){
@@ -726,24 +740,6 @@ function wire(){
         await cargar(); render(); toast("Documento borrado.");
         return true;
       });
-    });
-  });
-  m.querySelectorAll("[data-epp]").forEach(function(cb){
-    cb.addEventListener("change",async function(){
-      var p=actual(); if(!p) return;
-      var cambio={}; cambio[cb.dataset.f]=cb.checked;
-      try{
-        await api("epp/"+encodeURIComponent(cb.dataset.epp),{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify(cambio)});
-        await cargar(); render();
-      }catch(e){ toast(e.message); cb.checked=!cb.checked; }
-    });
-  });
-  m.querySelectorAll("[data-delepp]").forEach(function(b){
-    b.addEventListener("click",async function(){
-      try{
-        await api("epp/"+encodeURIComponent(b.dataset.delepp),{method:"DELETE"});
-        await cargar(); render(); toast("Entrega eliminada.");
-      }catch(e){ toast(e.message); }
     });
   });
 }

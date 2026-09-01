@@ -48,7 +48,9 @@ export function usuariosDe(env) {
   for (const u of l) {
     if (!u || !u.usuario || !u.sal || !u.hash) throw new Error("FORMATO");
   }
-  return l;
+  /* Sin rol declarado, el usuario es administrador: así los usuarios
+   * antiguos siguen funcionando igual que antes. */
+  return l.map((u) => ({ ...u, rol: u.rol === "lectura" ? "lectura" : "admin" }));
 }
 
 export function buscarUsuario(lista, usuario) {
@@ -85,12 +87,13 @@ export async function entrar(env, usuario, clave) {
   if (!u) return null;
   const hash = await derivar(clave, u.sal);
   if (!iguales(hash, u.hash)) return null;
-  return { usuario: u.usuario, nombre: u.nombre || u.usuario };
+  return { usuario: u.usuario, nombre: u.nombre || u.usuario, rol: u.rol };
 }
 
 export async function cookieSesion(env, sesion, seguro) {
   const cuerpo = b64.a(new TextEncoder().encode(JSON.stringify({
-    u: sesion.usuario, n: sesion.nombre, exp: Math.floor(Date.now() / 1000) + DURACION,
+    u: sesion.usuario, n: sesion.nombre, r: sesion.rol || "admin",
+    exp: Math.floor(Date.now() / 1000) + DURACION,
   })));
   const valor = cuerpo + "." + (await firmar(env, cuerpo));
   return COOKIE + "=" + valor + "; HttpOnly; SameSite=Lax; Path=/; Max-Age=" + DURACION + (seguro ? "; Secure" : "");
@@ -110,7 +113,7 @@ export async function sesionDe(env, cabeceraCookie) {
   try {
     const d = JSON.parse(Buffer.from(b64.de(partes[0])).toString("utf8"));
     if (!d.exp || d.exp < Math.floor(Date.now() / 1000)) return null;
-    return { usuario: d.u, nombre: d.n };
+    return { usuario: d.u, nombre: d.n, rol: d.r === "lectura" ? "lectura" : "admin" };
   } catch (e) {
     return null;
   }

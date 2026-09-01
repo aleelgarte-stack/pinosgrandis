@@ -17,6 +17,12 @@ export const HOJAS = {
   epp: "EPP",
 };
 
+/* Cuántos archivos admite cada documento. 0 = sin límite.
+ * El carné de salud lleva hasta dos (frente y dorso); el EPP, varios. */
+export const MAX_ARCHIVOS = {
+  salud: 2, moto: 1, libH: 1, libA: 1, pa: 1, bps: 1, epp: 0, otros: 0,
+};
+
 export const COLUMNAS = {
   Personal: [
     "ID", "Empresa", "Servicio", "Nombre", "Documento", "F. Nacimiento", "Ingreso",
@@ -121,9 +127,10 @@ async function leerHoja(env, planillaId, hoja, columnas) {
   return { encabezados, idx, datos };
 }
 
-function aPersona(f, documentos, epp) {
+function aPersona(f, documentos) {
   const id = f["ID"];
   const doc = (tipo) => documentos.find((d) => d.personaId === id && d.tipo === tipo) || null;
+  const docs = (tipo) => documentos.filter((d) => d.personaId === id && d.tipo === tipo);
   return {
     id,
     empresa: f["Empresa"] || "",
@@ -135,22 +142,22 @@ function aPersona(f, documentos, epp) {
     categoria: f["Categoría"] || "",
     funcion: f["Función"] || "",
     estado: f["Estado"] || "Activo",
-    salud: { vto: aISO(f["C. Salud"]), na: esNA(f["C. Salud N/A"]), archivo: doc("salud") },
-    moto: { vto: aISO(f["C. Motosierrista"]), na: esNA(f["C. Motosierrista N/A"]), archivo: doc("moto") },
-    libH: { vto: aISO(f["Libreta H"]), na: esNA(f["Libreta H N/A"]), archivo: doc("libH") },
-    libA: { vto: aISO(f["Libreta A"]), na: esNA(f["Libreta A N/A"]), archivo: doc("libA") },
+    salud: { vto: aISO(f["C. Salud"]), na: esNA(f["C. Salud N/A"]), archivo: doc("salud"), archivos: docs("salud") },
+    moto: { vto: aISO(f["C. Motosierrista"]), na: esNA(f["C. Motosierrista N/A"]), archivo: doc("moto"), archivos: docs("moto") },
+    libH: { vto: aISO(f["Libreta H"]), na: esNA(f["Libreta H N/A"]), archivo: doc("libH"), archivos: docs("libH") },
+    libA: { vto: aISO(f["Libreta A"]), na: esNA(f["Libreta A N/A"]), archivo: doc("libA"), archivos: docs("libA") },
     pa: {
       vto: aISO(f["Primeros Auxilios"]), na: esNA(f["Primeros Auxilios N/A"]),
-      emisor: f["Dictado por"] || "", archivo: doc("pa"),
+      emisor: f["Dictado por"] || "", archivo: doc("pa"), archivos: docs("pa"),
     },
     bps: {
       tiene: esSi(f["Alta BPS"]), numero: f["Nº BPS"] || "",
-      fecha: aISO(f["Fecha alta BPS"]), archivo: doc("bps"),
+      fecha: aISO(f["Fecha alta BPS"]), archivo: doc("bps"), archivos: docs("bps"),
     },
     carpetaId: f["Carpeta Drive"] || "",
     carpetaUrl: f["Enlace carpeta"] || "",
     archivos: documentos.filter((d) => d.personaId === id && d.tipo === "otros"),
-    epp: epp.filter((e) => e.personaId === id),
+    epp: docs("epp"),
     _fila: f._fila,
   };
 }
@@ -163,27 +170,17 @@ function aDocumento(f) {
     mime: f["MIME"] || "", tam: f["Tamaño"] || "", _fila: f._fila,
   };
 }
-function aEpp(f) {
-  return {
-    id: f["ID"], personaId: f["PersonaID"], equipo: f["Equipo"] || "", detalle: f["Detalle"] || "",
-    fechaEntrega: aISO(f["Fecha entrega"]), entregado: esSi(f["Entregado"]),
-    fechaReposicion: aISO(f["Fecha reposición"]), repuesto: esSi(f["Repuesto"]), _fila: f._fila,
-  };
-}
-
 export async function leerTodo(env) {
   const d = await destino(env);
-  const [per, doc, epp] = await Promise.all([
+  const [per, doc] = await Promise.all([
     leerHoja(env, d.planillaId, HOJAS.personal, COLUMNAS.Personal),
     leerHoja(env, d.planillaId, HOJAS.documentos, COLUMNAS.Documentos),
-    leerHoja(env, d.planillaId, HOJAS.epp, COLUMNAS.EPP),
   ]);
   const documentos = doc.datos.map(aDocumento);
-  const equipos = epp.datos.map(aEpp);
   return {
     destino: d,
-    personas: per.datos.map((f) => aPersona(f, documentos, equipos)),
-    _hojas: { personal: per, documentos: doc, epp: epp },
+    personas: per.datos.map((f) => aPersona(f, documentos)),
+    _hojas: { personal: per, documentos: doc },
   };
 }
 
@@ -338,11 +335,14 @@ export async function guardarDocumento(env, personaId, { tipo, etiqueta, nombre,
   const { carpetaId, destino: d } = await carpetaDe(env, personaId);
   const subido = await G.subirArchivo(env, { nombre, mime, datos, carpeta: carpetaId });
 
-  /* Un documento de vencimiento reemplaza al anterior del mismo tipo. */
-  if (tipo && tipo !== "otros") {
+  /* Cada documento admite una cantidad de archivos. Al pasarse, se borra el
+   * más viejo: así el carné de salud guarda los dos últimos y los demás, uno. */
+  const max = MAX_ARCHIVOS[tipo] || 0;
+  if (max > 0) {
     const hoja = await leerHoja(env, d.planillaId, HOJAS.documentos, COLUMNAS.Documentos);
-    const previo = hoja.datos.find((f) => f["PersonaID"] === personaId && f["Tipo"] === tipo);
-    if (previo) await borrarDocumentoFila(env, d, hoja, previo);
+    const previos = hoja.datos.filter((f) => f["PersonaID"] === personaId && f["Tipo"] === tipo);
+    const sobran = previos.length - (max - 1);
+    for (let i = 0; i < sobran; i++) await borrarDocumentoFila(env, d, hoja, previos[i]);
   }
 
   const doc = {
@@ -384,49 +384,6 @@ export async function documentoPorId(env, docId) {
   const hoja = await leerHoja(env, d.planillaId, HOJAS.documentos, COLUMNAS.Documentos);
   const f = hoja.datos.find((x) => x["ID"] === docId);
   return f ? aDocumento(f) : null;
-}
-
-/* ------------------------------ EPP ------------------------------ */
-
-export async function guardarEpp(env, personaId, e) {
-  const d = await destino(env);
-  const hoja = await leerHoja(env, d.planillaId, HOJAS.epp, COLUMNAS.EPP);
-  const reg = {
-    "ID": nuevoId("E"), "PersonaID": personaId, "Equipo": e.equipo || "", "Detalle": e.detalle || "",
-    "Fecha entrega": aISO(e.fechaEntrega), "Entregado": e.entregado ? SI : NO,
-    "Fecha reposición": aISO(e.fechaReposicion), "Repuesto": e.repuesto ? SI : NO,
-  };
-  await G.agregarFila(env, d.planillaId, HOJAS.epp, hoja.encabezados.map((h) => reg[h] ?? ""));
-  return reg["ID"];
-}
-
-export async function actualizarEpp(env, eppId, cambios) {
-  const d = await destino(env);
-  const hoja = await leerHoja(env, d.planillaId, HOJAS.epp, COLUMNAS.EPP);
-  const f = hoja.datos.find((x) => x["ID"] === eppId);
-  if (!f) throw new Error("No existe el registro de EPP");
-  const actual = aEpp(f);
-  const nuevo = { ...actual, ...cambios };
-  const v = {
-    "ID": eppId, "PersonaID": actual.personaId, "Equipo": nuevo.equipo, "Detalle": nuevo.detalle,
-    "Fecha entrega": aISO(nuevo.fechaEntrega), "Entregado": nuevo.entregado ? SI : NO,
-    "Fecha reposición": aISO(nuevo.fechaReposicion), "Repuesto": nuevo.repuesto ? SI : NO,
-  };
-  await G.escribirRango(env, d.planillaId, HOJAS.epp + "!A" + f._fila, [hoja.encabezados.map((h) => v[h] ?? "")]);
-  return nuevo;
-}
-
-export async function borrarEpp(env, eppId) {
-  const d = await destino(env);
-  const hoja = await leerHoja(env, d.planillaId, HOJAS.epp, COLUMNAS.EPP);
-  const f = hoja.datos.find((x) => x["ID"] === eppId);
-  if (!f) return false;
-  await G.escribirRango(
-    env, d.planillaId,
-    HOJAS.epp + "!A" + f._fila + ":" + letraColumna(hoja.encabezados.length - 1) + f._fila,
-    [hoja.encabezados.map(() => "")]
-  );
-  return true;
 }
 
 /* ------------------------- importación inicial ------------------------- */

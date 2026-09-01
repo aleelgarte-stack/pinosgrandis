@@ -29,9 +29,9 @@ h1{font-size:24px;margin:0 0 6px;text-align:center}
 .caja{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:24px;box-shadow:var(--shadow);margin-bottom:18px}
 h2{font-size:17px;margin:0 0 14px}
 label{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin-bottom:5px}
-input{width:100%;padding:10px 12px;font:inherit;font-size:15px;background:var(--surface);color:var(--ink);
+input,select{width:100%;padding:10px 12px;font:inherit;font-size:15px;background:var(--surface);color:var(--ink);
   border:1px solid var(--border-strong);border-radius:8px;margin-bottom:14px}
-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,104,56,.12)}
+input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,104,56,.12)}
 .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 18px;
   font:inherit;font-weight:600;cursor:pointer}
 .btn:hover{background:var(--accent-ink)}
@@ -108,7 +108,12 @@ function fila(n){
     '<label>Nombre visible</label>'+
     '<input class="n" type="text" placeholder="Marcela — RRHH">'+
     '<label>Contraseña <span style="font-weight:400;color:var(--muted)">— mínimo 8 caracteres</span></label>'+
-    '<input class="c" type="text" placeholder="una contraseña larga">';
+    '<input class="c" type="text" placeholder="una contraseña larga">'+
+    '<label>Permisos</label>'+
+    '<select class="r">'+
+      '<option value="admin">Administrador — carga y edita todo</option>'+
+      '<option value="lectura">Solo consulta — ve todo, no modifica nada</option>'+
+    '</select>';
   if(n>0) d.style.borderTop="1px solid var(--border)", d.style.paddingTop="16px", d.style.marginTop="4px";
   cont.appendChild(d);
 }
@@ -135,10 +140,11 @@ document.getElementById("generar").addEventListener("click",async function(){
     var u=d.querySelector(".u").value.trim();
     var n=d.querySelector(".n").value.trim();
     var c=d.querySelector(".c").value;
+    var r=d.querySelector(".r").value;
     if(!u&&!c) continue;
     if(!u){ err.textContent="Falta el usuario en una de las personas."; return; }
     if(c.length<8){ err.textContent="La contraseña de "+u+" tiene que tener al menos 8 caracteres."; return; }
-    lista.push({usuario:u,nombre:n||u,clave:c});
+    lista.push({usuario:u,nombre:n||u,clave:c,rol:r});
   }
   if(!lista.length){ err.textContent="Cargá al menos una persona."; return; }
 
@@ -147,7 +153,7 @@ document.getElementById("generar").addEventListener("click",async function(){
     var salida=[];
     for(var k=0;k<lista.length;k++){
       var sal=crypto.getRandomValues(new Uint8Array(16));
-      salida.push({usuario:lista[k].usuario,nombre:lista[k].nombre,
+      salida.push({usuario:lista[k].usuario,nombre:lista[k].nombre,rol:lista[k].rol,
         sal:b64(sal),hash:await derivar(lista[k].clave,sal)});
     }
     var s=document.getElementById("salidaU");
